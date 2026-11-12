@@ -98,7 +98,7 @@ h1 { font-size: clamp(3rem, 9vw, 5.25rem); line-height: 1; }
 h2 { font-size: clamp(1.9rem, 4.5vw, 2.5rem); }
 .eyebrow { font-size: 0.9rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); margin: 0 0 1rem; }
 .eyebrow a { text-decoration: none; }
-.section { margin-top: 5.5rem; content-visibility: auto; contain-intrinsic-size: auto 520px; }
+.section { margin-top: 5.5rem; }
 .section.tight { margin-top: 2rem; }
 .section.mid { margin-top: 3rem; }
 .section > h2 { margin-bottom: 1.5rem; }
@@ -241,8 +241,20 @@ a.chip:hover { border-color: var(--accent); color: var(--accent); }
 
 /* particles + splatter */
 #fx { position: fixed; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+@property --ripple-r { syntax: '<length>'; inherits: false; initial-value: 0px; }
 .ink-drops { position: fixed; inset: 0; pointer-events: none; overflow: hidden; view-transition-name: ink-drops; }
 ::view-transition-group(root), ::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+/* the new theme appears inside the expanding circle; the banded falloff makes the colour change ripple */
+::view-transition-new(root) {
+  -webkit-mask-image: radial-gradient(circle at var(--ox, 50%) var(--oy, 50%),
+    #000 calc(var(--ripple-r) - 190px), rgba(0,0,0,.78) calc(var(--ripple-r) - 150px), rgba(0,0,0,.9) calc(var(--ripple-r) - 112px),
+    rgba(0,0,0,.52) calc(var(--ripple-r) - 76px), rgba(0,0,0,.66) calc(var(--ripple-r) - 44px),
+    rgba(0,0,0,.24) calc(var(--ripple-r) - 12px), transparent calc(var(--ripple-r) + 26px));
+  mask-image: radial-gradient(circle at var(--ox, 50%) var(--oy, 50%),
+    #000 calc(var(--ripple-r) - 190px), rgba(0,0,0,.78) calc(var(--ripple-r) - 150px), rgba(0,0,0,.9) calc(var(--ripple-r) - 112px),
+    rgba(0,0,0,.52) calc(var(--ripple-r) - 76px), rgba(0,0,0,.66) calc(var(--ripple-r) - 44px),
+    rgba(0,0,0,.24) calc(var(--ripple-r) - 12px), transparent calc(var(--ripple-r) + 26px));
+}
 ::view-transition-group(ink-drops), ::view-transition-old(ink-drops), ::view-transition-new(ink-drops) { animation: none; }
 @media (prefers-reduced-motion: reduce) { ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none; } }
 .theme-btn { display: grid; place-items: center; line-height: 1; }
