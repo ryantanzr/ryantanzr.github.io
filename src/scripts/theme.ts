@@ -1,5 +1,6 @@
-// Theme toggle with an ink-splatter transition.
-// Night: ink spreads from the button. Day: a wash of paper spreads back.
+// Theme toggle. The new theme is revealed through an organic, ink-shaped edge that
+// spreads from the button (View Transitions + an animated clip-path), with ink
+// droplets flung ahead of it. The page stays visible the whole time.
 const root = document.documentElement;
 const btn = document.getElementById('theme') as HTMLButtonElement | null;
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -16,88 +17,80 @@ function apply(theme: 'dark' | 'light') {
   }
 }
 
-const NS = 'http://www.w3.org/2000/svg';
-const el = (name: string, attrs: Record<string, string | number> = {}) => {
-  const n = document.createElementNS(NS, name);
-  for (const k in attrs) n.setAttribute(k, String(attrs[k]));
-  return n;
-};
-const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
+const TAU = Math.PI * 2;
+const easeOut = (t: number) => 1 - Math.pow(1 - t, 2.1);
+const rand = (a: number, b: number) => a + Math.random() * (b - a);
 
-function splatter(next: 'dark' | 'light', ox: number, oy: number) {
+/** Build clip-path keyframes for a blobby, ink-like edge growing from (ox, oy). */
+function inkFrames(ox: number, oy: number, R: number) {
+  const POINTS = 90, STEPS = 30;
+  const lobes = Array.from({ length: 5 }, () => ({
+    k: 2 + Math.floor(Math.random() * 5), a: rand(0.05, 0.13), ph: rand(0, TAU), drift: rand(-1.5, 1.5),
+  }));
+  const fingers = Array.from({ length: 8 }, () => ({ at: rand(0, TAU), w: rand(0.06, 0.12), h: rand(0.14, 0.34) }));
+  const frames: string[] = [];
+  for (let s = 0; s <= STEPS; s++) {
+    const p = s / STEPS;
+    const base = R * easeOut(p);
+    const wobble = Math.pow(1 - p, 0.8); // edge irregularity melts away as it covers the screen
+    const pts: string[] = [];
+    for (let i = 0; i < POINTS; i++) {
+      const th = (i / POINTS) * TAU;
+      let j = 0;
+      for (const l of lobes) j += l.a * Math.sin(l.k * th + l.ph + l.drift * p * 3);
+      for (const f of fingers) {
+        let d = Math.abs(th - f.at); if (d > Math.PI) d = TAU - d;
+        j += f.h * Math.exp(-(d * d) / (2 * f.w * f.w)); // pointed ink "fingers"
+      }
+      const r = base * (1 + j * wobble);
+      pts.push(`${(ox + Math.cos(th) * r).toFixed(1)}px ${(oy + Math.sin(th) * r).toFixed(1)}px`);
+    }
+    frames.push(`polygon(${pts.join(',')})`);
+  }
+  return frames;
+}
+
+function flingDrops(container: HTMLElement, ox: number, oy: number, R: number, color: string) {
+  for (let i = 0; i < 18; i++) {
+    const size = rand(5, 22);
+    const d = document.createElement('i');
+    d.style.cssText = `position:absolute;left:${ox - size / 2}px;top:${oy - size / 2}px;width:${size}px;height:${size}px;border-radius:50%;background:${color};`;
+    container.append(d);
+    const ang = rand(0, TAU), dist = R * rand(0.35, 0.95);
+    d.animate(
+      [
+        { transform: 'translate(0,0) scale(0.3)', opacity: 1, offset: 0 },
+        { transform: `translate(${Math.cos(ang) * dist * 0.85}px, ${Math.sin(ang) * dist * 0.85}px) scale(1)`, opacity: 1, offset: 0.7 },
+        { transform: `translate(${Math.cos(ang) * dist}px, ${Math.sin(ang) * dist}px) scale(0.6)`, opacity: 0, offset: 1 },
+      ],
+      { duration: rand(650, 950), easing: 'cubic-bezier(.2,.7,.3,1)', fill: 'forwards' },
+    );
+  }
+}
+
+function reveal(next: 'dark' | 'light', ox: number, oy: number) {
   busy = true;
   const W = innerWidth, H = innerHeight;
-  const color = next === 'dark' ? '#141210' : '#efe8d8';
   const R = Math.hypot(Math.max(ox, W - ox), Math.max(oy, H - oy)) * 1.12;
+  const frames = inkFrames(ox, oy, R);
+  const dropColor = next === 'dark' ? '#141210' : '#efe8d8';
+  const DURATION = 900;
+  let drops: HTMLElement | null = null;
 
-  const svg = el('svg', { class: 'ink-splash', viewBox: `0 0 ${W} ${H}`, 'aria-hidden': 'true' });
-  const defs = el('defs');
-  // gooey merge: blur, then threshold alpha so touching blobs fuse like wet ink
-  const goo = el('filter', { id: 'splash-goo', filterUnits: 'userSpaceOnUse', x: 0, y: 0, width: W, height: H });
-  goo.append(
-    el('feGaussianBlur', { in: 'SourceGraphic', stdDeviation: 9, result: 'b' }),
-    el('feColorMatrix', { in: 'b', type: 'matrix', values: '1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 24 -10', result: 'g' }),
-    el('feTurbulence', { type: 'fractalNoise', baseFrequency: 0.012, numOctaves: 3, seed: Math.floor(Math.random() * 90), result: 'n' }),
-    el('feDisplacementMap', { in: 'g', in2: 'n', scale: 70, xChannelSelector: 'R', yChannelSelector: 'G' }),
-  );
-  defs.append(goo);
-  const g = el('g', { filter: 'url(#splash-goo)', fill: color });
-  svg.append(defs, g);
-
-  const main = el('circle', { cx: ox, cy: oy, r: 0 });
-  g.append(main);
-
-  // fingers: lobes riding the main edge, so the outline is blobby, not a clean circle
-  const fingers = Array.from({ length: 16 }, () => ({
-    a: Math.random() * Math.PI * 2,
-    reach: 0.92 + Math.random() * 0.2,
-    size: 0.05 + Math.random() * 0.1,
-    node: el('circle', { r: 0, cx: ox, cy: oy }),
-  }));
-  // droplets flung ahead of the splash
-  const drops = Array.from({ length: 26 }, () => ({
-    a: Math.random() * Math.PI * 2,
-    lead: 1.08 + Math.random() * 0.5,
-    r: 3 + Math.random() * 13,
-    node: el('circle', { r: 0, cx: ox, cy: oy }),
-  }));
-  g.append(...fingers.map((f) => f.node), ...drops.map((d) => d.node));
-  document.body.append(svg);
-
-  const GROW = 950, FADE = 800;
-  const t0 = performance.now();
-  let swapped = false;
-
-  function frame(now: number) {
-    const t = now - t0;
-    if (t <= GROW) {
-      const k = easeOut(t / GROW);
-      const r = R * k;
-      main.setAttribute('r', String(r));
-      for (const f of fingers) {
-        f.node.setAttribute('cx', String(ox + Math.cos(f.a) * r * f.reach));
-        f.node.setAttribute('cy', String(oy + Math.sin(f.a) * r * f.reach));
-        f.node.setAttribute('r', String(r * f.size));
-      }
-      for (const d of drops) {
-        const dist = r * d.lead;
-        d.node.setAttribute('cx', String(ox + Math.cos(d.a) * dist));
-        d.node.setAttribute('cy', String(oy + Math.sin(d.a) * dist));
-        d.node.setAttribute('r', String(d.r * Math.min(1, t / 140)));
-      }
-      requestAnimationFrame(frame);
-      return;
-    }
-    if (!swapped) {
-      swapped = true;
-      apply(next); // sun/moon transitions start now, beneath the fading ink
-    }
-    const f = (t - GROW) / FADE;
-    svg.style.opacity = String(Math.max(0, 1 - f * f));
-    if (f < 1) requestAnimationFrame(frame);
-    else { svg.remove(); busy = false; }
-  }
-  requestAnimationFrame(frame);
+  const vt = (document as any).startViewTransition(() => {
+    apply(next);
+    drops = document.createElement('div');
+    drops.className = 'ink-drops';
+    document.body.append(drops);
+  });
+  vt.ready.then(() => {
+    root.animate(
+      { clipPath: frames },
+      { duration: DURATION, easing: 'linear', fill: 'forwards', pseudoElement: '::view-transition-new(root)' },
+    );
+    if (drops) flingDrops(drops, ox, oy, R, dropColor);
+  }).catch(() => {});
+  vt.finished.finally(() => { drops?.remove(); busy = false; });
 }
 
 if (btn) {
@@ -105,8 +98,8 @@ if (btn) {
   btn.addEventListener('click', () => {
     if (busy) return;
     const next = current() === 'dark' ? 'light' : 'dark';
-    if (reduce) { apply(next); return; }
+    if (reduce || !('startViewTransition' in document)) { apply(next); return; }
     const r = btn.getBoundingClientRect();
-    splatter(next, r.left + r.width / 2, r.top + r.height / 2);
+    reveal(next, r.left + r.width / 2, r.top + r.height / 2);
   });
 }

@@ -28,12 +28,11 @@ const year = new Date().getFullYear();
     <meta property="og:type" content={type} />
     <meta property="og:url" content={canonical} />
     <meta name="color-scheme" content="light dark" />
-    <link rel="preload" href="/fonts/Minoru.otf" as="font" type="font/otf" crossorigin />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Lato:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <link rel="preload" href="/fonts/Minoru.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/lato-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
     <script is:inline>
-      var t = null; try { t = localStorage.getItem('theme'); } catch (e) {} if (t !== 'dark' && t !== 'light') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; document.documentElement.dataset.theme = t;
+      var t = null; try { t = localStorage.getItem('theme'); } catch (e) {} if (t !== 'dark' && t !== 'light') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; document.documentElement.dataset.theme = t; if (window.top !== window.self) document.documentElement.style.display = 'none';
     </script>
   </head>
   <body>
@@ -55,8 +54,8 @@ const year = new Date().getFullYear();
       <div class="wrap">
         <span>© {year} {site.fullName}</span>
         <span class="links">
-          <a href={site.github} rel="me">GitHub</a>
-          <a href={site.linkedin} rel="me">LinkedIn</a>
+          <a href={site.github} rel="me noopener noreferrer">GitHub</a>
+          <a href={site.linkedin} rel="me noopener noreferrer">LinkedIn</a>
           <a href="/rss.xml">RSS</a>
         </span>
       </div>

@@ -1,0 +1,32 @@
+# Sveltia CMS: a writing UI for the blog, served at /admin.
+# Sign in with a GitHub fine-grained token (Contents: read & write on this repo).
+# Saving a post commits it to `main`, which triggers the GitHub Pages deploy.
+backend:
+  name: github
+  repo: ryantanzr/ryantanzr.github.io
+  branch: main
+
+site_url: https://ryantanzr.github.io
+display_url: https://ryantanzr.github.io
+
+media_folder: public/images/blog
+public_folder: /images/blog
+
+collections:
+  - name: blog
+    label: Blog posts
+    label_singular: Post
+    folder: src/content/blog
+    extension: md
+    format: frontmatter
+    create: true
+    slug: '{{slug}}'
+    summary: '{{title}} · {{pubDate}}'
+    sortable_fields: [pubDate, title]
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Description, name: description, widget: text, hint: 'One or two sentences shown in lists and link previews.' }
+      - { label: Date, name: pubDate, widget: datetime, date_format: 'YYYY-MM-DD', time_format: false, picker_utc: true }
+      - { label: Tags, name: tags, widget: list, required: false, default: [] }
+      - { label: Draft, name: draft, widget: boolean, default: false, hint: 'Drafts are saved but not published on the site.' }
+      - { label: Body, name: body, widget: markdown }

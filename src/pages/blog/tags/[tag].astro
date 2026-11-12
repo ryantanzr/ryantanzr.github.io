@@ -16,8 +16,8 @@ const { tag } = Astro.params;
 const { posts } = Astro.props;
 ---
 <Base title={`#${tag}`} description={`Posts tagged ${tag}`}>
-  <div class="post-head" style="border:0;margin-bottom:0">
-    <p class="eyebrow"><a href="/blog/" style="text-decoration:none">/blog</a>/tags</p>
+  <div class="post-head flush">
+    <p class="eyebrow"><a href="/blog/" class="plain">/blog</a>/tags</p>
     <h1>#{tag}</h1>
   </div>
   <PostList posts={posts} />
