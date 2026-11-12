@@ -1,0 +1,2 @@
+Sveltia CMS 0.253.2 (MIT), vendored unmodified from the npm package @sveltia/cms.
+https://github.com/sveltia/sveltia-cms

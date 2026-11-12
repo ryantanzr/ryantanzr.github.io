@@ -50,7 +50,7 @@ const posts = (await getCollection('blog', (p) => !p.data.draft))
     <ul class="work">
       {projects.map((p) => (
         <li>
-          <h3><a href={p.href}>{p.name}</a></h3>
+          <h3><a href={p.href} rel="noopener noreferrer">{p.name}</a></h3>
           <span class="stack">{p.stack.join(' · ')}</span>
           <p>{p.summary}</p>
         </li>
@@ -58,14 +58,16 @@ const posts = (await getCollection('blog', (p) => !p.data.draft))
     </ul>
   </section>
 
-  <section class="section" id="writing">
-    <div class="section-head"><h2>Latest writing</h2><a href="/blog/">All posts →</a></div>
-    {posts.length ? <PostList posts={posts} /> : <p>Posts coming soon.</p>}
-  </section>
+  {posts.length > 0 && (
+    <section class="section" id="writing">
+      <div class="section-head"><h2>Latest writing</h2><a href="/blog/">All posts →</a></div>
+      <PostList posts={posts} />
+    </section>
+  )}
 
   <section class="section hello" id="contact">
     <h2>Say hello</h2>
-    <p>Always happy to talk about backend systems, assistive tech, or a good cup of tea.</p>
+    <p>Happy to talk about backend systems, assistive tech, or whatever you're building.</p>
     <a class="btn primary" href={`mailto:${site.email}`}>Email me</a>
   </section>
 </Base>

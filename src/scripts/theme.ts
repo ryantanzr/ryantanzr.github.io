@@ -1,5 +1,6 @@
-// Theme toggle with an ink-splatter transition.
-// Night: ink spreads from the button. Day: a wash of paper spreads back.
+// Theme toggle as a waterdrop: a drop lands on the button, ripples emanate outward,
+// and the new theme bleeds in slowly behind the leading wave (View Transitions +
+// a feathered, animated mask). The page stays visible the whole time.
 const root = document.documentElement;
 const btn = document.getElementById('theme') as HTMLButtonElement | null;
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -17,87 +18,104 @@ function apply(theme: 'dark' | 'light') {
 }
 
 const NS = 'http://www.w3.org/2000/svg';
-const el = (name: string, attrs: Record<string, string | number> = {}) => {
-  const n = document.createElementNS(NS, name);
-  for (const k in attrs) n.setAttribute(k, String(attrs[k]));
-  return n;
-};
-const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
+const easeOut = (t: number) => 1 - Math.pow(1 - Math.min(Math.max(t, 0), 1), 3);
 
-function splatter(next: 'dark' | 'light', ox: number, oy: number) {
-  busy = true;
-  const W = innerWidth, H = innerHeight;
-  const color = next === 'dark' ? '#141210' : '#efe8d8';
-  const R = Math.hypot(Math.max(ox, W - ox), Math.max(oy, H - oy)) * 1.12;
+const FRONT_MS = 2000;                        // how long the colours take to flood the page
+const RING_DELAYS = [0, 200, 400, 620, 860];  // successive ripples, trailing the leading wave
 
-  const svg = el('svg', { class: 'ink-splash', viewBox: `0 0 ${W} ${H}`, 'aria-hidden': 'true' });
-  const defs = el('defs');
-  // gooey merge: blur, then threshold alpha so touching blobs fuse like wet ink
-  const goo = el('filter', { id: 'splash-goo', filterUnits: 'userSpaceOnUse', x: 0, y: 0, width: W, height: H });
-  goo.append(
-    el('feGaussianBlur', { in: 'SourceGraphic', stdDeviation: 9, result: 'b' }),
-    el('feColorMatrix', { in: 'b', type: 'matrix', values: '1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 24 -10', result: 'g' }),
-    el('feTurbulence', { type: 'fractalNoise', baseFrequency: 0.012, numOctaves: 3, seed: Math.floor(Math.random() * 90), result: 'n' }),
-    el('feDisplacementMap', { in: 'g', in2: 'n', scale: 70, xChannelSelector: 'R', yChannelSelector: 'G' }),
+/** A droplet falls onto the button; resolves on impact. */
+function dropFall(ox: number, oy: number, next: 'dark' | 'light') {
+  const el = document.createElement('i');
+  const night = next === 'dark';
+  el.style.cssText =
+    `position:fixed;z-index:9999;pointer-events:none;left:${ox - 7}px;top:${oy - 9}px;width:14px;height:18px;` +
+    `border-radius:50% 50% 50% 50% / 62% 62% 38% 38%;` +
+    `background:radial-gradient(circle at 35% 30%, rgba(255,255,255,.9), ${night ? '#2a2620' : '#f4efe3'} 55%);` +
+    `box-shadow:0 0 0 1px ${night ? 'rgba(255,255,255,.35)' : 'rgba(0,0,0,.22)'}, 0 2px 8px rgba(0,0,0,.25);`;
+  document.body.append(el);
+  const fall = Math.min(oy + 24, 90);
+  const a = el.animate(
+    [
+      { transform: `translateY(${-fall}px) scale(0.8, 1.35)`, opacity: 0 },
+      { transform: `translateY(${-fall * 0.5}px) scale(0.85, 1.3)`, opacity: 1, offset: 0.35 },
+      { transform: 'translateY(0) scale(1, 1)', opacity: 1, offset: 0.88 },
+      { transform: 'translateY(2px) scale(1.7, 0.2)', opacity: 0 },
+    ],
+    { duration: 300, easing: 'cubic-bezier(.5,0,.9,.6)', fill: 'forwards' },
   );
-  defs.append(goo);
-  const g = el('g', { filter: 'url(#splash-goo)', fill: color });
-  svg.append(defs, g);
+  return a.finished.then(() => el.remove());
+}
 
-  const main = el('circle', { cx: ox, cy: oy, r: 0 });
-  g.append(main);
-
-  // fingers: lobes riding the main edge, so the outline is blobby, not a clean circle
-  const fingers = Array.from({ length: 16 }, () => ({
-    a: Math.random() * Math.PI * 2,
-    reach: 0.92 + Math.random() * 0.2,
-    size: 0.05 + Math.random() * 0.1,
-    node: el('circle', { r: 0, cx: ox, cy: oy }),
-  }));
-  // droplets flung ahead of the splash
-  const drops = Array.from({ length: 26 }, () => ({
-    a: Math.random() * Math.PI * 2,
-    lead: 1.08 + Math.random() * 0.5,
-    r: 3 + Math.random() * 13,
-    node: el('circle', { r: 0, cx: ox, cy: oy }),
-  }));
-  g.append(...fingers.map((f) => f.node), ...drops.map((d) => d.node));
-  document.body.append(svg);
-
-  const GROW = 950, FADE = 800;
+/** Concentric ripple rings (SVG, driven per frame so stroke width stays constant). */
+function ripples(container: HTMLElement, ox: number, oy: number, R: number, next: 'dark' | 'light') {
+  const W = innerWidth, H = innerHeight;
+  const svg = document.createElementNS(NS, 'svg');
+  svg.setAttribute('width', String(W));
+  svg.setAttribute('height', String(H));
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  const rgb = next === 'dark' ? '255,238,205' : '29,26,23';
+  const rings = RING_DELAYS.map(() => {
+    const glow = document.createElementNS(NS, 'circle');
+    const line = document.createElementNS(NS, 'circle');
+    for (const c of [glow, line]) {
+      c.setAttribute('cx', String(ox)); c.setAttribute('cy', String(oy));
+      c.setAttribute('fill', 'none'); c.setAttribute('stroke', `rgb(${rgb})`);
+    }
+    glow.setAttribute('stroke-width', '14');
+    line.setAttribute('stroke-width', '2');
+    svg.append(glow, line);
+    return { glow, line };
+  });
+  container.append(svg);
   const t0 = performance.now();
-  let swapped = false;
-
-  function frame(now: number) {
+  const end = FRONT_MS + RING_DELAYS[RING_DELAYS.length - 1] + 100;
+  const tick = (now: number) => {
     const t = now - t0;
-    if (t <= GROW) {
-      const k = easeOut(t / GROW);
-      const r = R * k;
-      main.setAttribute('r', String(r));
-      for (const f of fingers) {
-        f.node.setAttribute('cx', String(ox + Math.cos(f.a) * r * f.reach));
-        f.node.setAttribute('cy', String(oy + Math.sin(f.a) * r * f.reach));
-        f.node.setAttribute('r', String(r * f.size));
-      }
-      for (const d of drops) {
-        const dist = r * d.lead;
-        d.node.setAttribute('cx', String(ox + Math.cos(d.a) * dist));
-        d.node.setAttribute('cy', String(oy + Math.sin(d.a) * dist));
-        d.node.setAttribute('r', String(d.r * Math.min(1, t / 140)));
-      }
-      requestAnimationFrame(frame);
-      return;
-    }
-    if (!swapped) {
-      swapped = true;
-      apply(next); // sun/moon transitions start now, beneath the fading ink
-    }
-    const f = (t - GROW) / FADE;
-    svg.style.opacity = String(Math.max(0, 1 - f * f));
-    if (f < 1) requestAnimationFrame(frame);
-    else { svg.remove(); busy = false; }
-  }
-  requestAnimationFrame(frame);
+    rings.forEach((ring, i) => {
+      const p = (t - RING_DELAYS[i]) / FRONT_MS;
+      const on = p > 0 && p < 1;
+      const r = R * easeOut(p);
+      const o = on ? 0.5 * Math.pow(1 - p, 1.4) : 0;
+      ring.line.setAttribute('r', String(Math.max(r, 0)));
+      ring.glow.setAttribute('r', String(Math.max(r, 0)));
+      ring.line.setAttribute('stroke-opacity', o.toFixed(3));
+      ring.glow.setAttribute('stroke-opacity', (o * 0.18).toFixed(3));
+    });
+    if (t < end) requestAnimationFrame(tick); else svg.remove();
+  };
+  requestAnimationFrame(tick);
+}
+
+/** Droplet lands on the button, ripples spread, and the new theme bleeds in behind the leading wave. */
+function reveal(next: 'dark' | 'light', ox: number, oy: number) {
+  busy = true;
+  const R = Math.hypot(Math.max(ox, innerWidth - ox), Math.max(oy, innerHeight - oy)) + 240;
+  root.style.setProperty('--ox', `${ox}px`);
+  root.style.setProperty('--oy', `${oy}px`);
+
+  dropFall(ox, oy, next).then(() => {
+    let container: HTMLElement | null = null;
+    const vt = (document as any).startViewTransition(() => {
+      apply(next);
+      container = document.createElement('div');
+      container.className = 'ink-drops';
+      document.body.append(container);
+    });
+    vt.ready.then(() => {
+      // --ripple-r is a registered <length>; the CSS mask feathers the colour change around it
+      root.animate(
+        { '--ripple-r': ['0px', `${R}px`] } as any,
+        { duration: FRONT_MS, easing: 'cubic-bezier(.22,.6,.3,1)', fill: 'forwards', pseudoElement: '::view-transition-new(root)' },
+      );
+      if (container) ripples(container, ox, oy, R, next);
+    }).catch(() => {});
+    vt.finished.finally(() => {
+      (container as HTMLElement | null)?.remove(); // frees the view-transition-name for the next toggle
+      root.style.removeProperty('--ox');
+      root.style.removeProperty('--oy');
+      busy = false;
+    });
+  });
 }
 
 if (btn) {
@@ -105,8 +123,8 @@ if (btn) {
   btn.addEventListener('click', () => {
     if (busy) return;
     const next = current() === 'dark' ? 'light' : 'dark';
-    if (reduce) { apply(next); return; }
+    if (reduce || !('startViewTransition' in document)) { apply(next); return; }
     const r = btn.getBoundingClientRect();
-    splatter(next, r.left + r.width / 2, r.top + r.height / 2);
+    reveal(next, r.left + r.width / 2, r.top + r.height / 2);
   });
 }

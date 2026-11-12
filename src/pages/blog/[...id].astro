@@ -14,7 +14,7 @@ const fmt = (d: Date) => d.toLocaleDateString('en-GB', { day: 'numeric', month: 
 <Base title={post.data.title} description={post.data.description} type="article">
   <article>
     <header class="post-head">
-      <p class="eyebrow"><a href="/blog/" style="text-decoration:none">← all posts</a></p>
+      <p class="eyebrow"><a href="/blog/" class="plain">← all posts</a></p>
       <h1>{post.data.title}</h1>
       <div class="meta">
         <time datetime={post.data.pubDate.toISOString()}>{fmt(post.data.pubDate)}</time>

@@ -1,8 +1,11 @@
 // Ambient particles: ink motes + drifting petals by day, fireflies by night.
 const canvas = document.getElementById('fx') as HTMLCanvasElement | null;
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const conn = (navigator as any).connection;
+// skip the effect on data-saver connections and low-end devices
+const lowEnd = !!conn?.saveData || (navigator.hardwareConcurrency ?? 8) <= 2;
 
-if (canvas && !reduce) {
+if (canvas && !reduce && !lowEnd) {
   const ctx = canvas.getContext('2d')!;
   const root = document.documentElement;
   let w = 0, h = 0, dpr = 1;
@@ -18,7 +21,7 @@ if (canvas && !reduce) {
   };
   readColors();
 
-  type P = { x: number; y: number; vx: number; vy: number; r: number; a: number; ph: number; petal: boolean; rot: number; vr: number; ang: number };
+  type P = { x: number; y: number; vx: number; vy: number; r: number; a: number; ph: number; petal: boolean; fly: boolean; rot: number; vr: number; ang: number };
   let ps: P[] = [];
   const rnd = (a: number, b: number) => a + Math.random() * (b - a);
 
@@ -27,11 +30,11 @@ if (canvas && !reduce) {
     return {
       x: rnd(0, w), y: rnd(0, h), vx: rnd(-0.12, 0.12), vy: petal ? rnd(0.25, 0.55) : rnd(-0.22, -0.05),
       r: petal ? rnd(3.5, 6.5) : rnd(0.8, 2.6), a: rnd(0.25, 0.6), ph: rnd(0, Math.PI * 2),
-      petal, rot: rnd(0, Math.PI * 2), vr: rnd(-0.02, 0.02), ang: rnd(0, Math.PI * 2),
+      petal, fly: Math.random() < 0.3, rot: rnd(0, Math.PI * 2), vr: rnd(-0.02, 0.02), ang: rnd(0, Math.PI * 2),
     };
   }
   function resize() {
-    dpr = Math.min(devicePixelRatio || 1, 2);
+    dpr = Math.min(devicePixelRatio || 1, 1.5);
     w = innerWidth; h = innerHeight;
     canvas!.width = w * dpr; canvas!.height = h * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -81,8 +84,9 @@ if (canvas && !reduce) {
       if (p.y < -20) p.y = h + 20; if (p.y > h + 20) p.y = -20;
 
       if (night) {
+        if (!p.fly) continue; // only some of the motes become fireflies
         const pulse = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(t * 1.6 + p.ph * 3));
-        const rad = (p.r + 2) * 4.2;
+        const rad = (p.r + 2) * 3.4;
         const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, rad);
         g.addColorStop(0, `rgba(255, 232, 160, ${0.9 * pulse * fade})`);
         g.addColorStop(0.25, `rgba(245, 195, 100, ${0.34 * pulse * fade})`);
@@ -103,5 +107,7 @@ if (canvas && !reduce) {
     ctx.globalAlpha = 1;
     requestAnimationFrame(frame);
   }
-  requestAnimationFrame(frame);
+  // start after first paint so it never competes with LCP
+  const idle: (cb: () => void, o?: object) => void = (window as any).requestIdleCallback || ((cb: () => void) => setTimeout(cb, 300));
+  idle(() => requestAnimationFrame(frame), { timeout: 1500 });
 }
