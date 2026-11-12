@@ -1,0 +1,27 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import InkRule from '../../components/InkRule.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', (p) => !p.data.draft);
+  return posts.map((post) => ({ params: { id: post.id }, props: { post } }));
+}
+const { post } = Astro.props;
+const { Content, remarkPluginFrontmatter } = await render(post);
+const fmt = (d: Date) => d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+---
+<Base title={post.data.title} description={post.data.description} type="article">
+  <article>
+    <header class="post-head">
+      <p class="eyebrow"><a href="/blog/" style="text-decoration:none">← all posts</a></p>
+      <h1>{post.data.title}</h1>
+      <div class="meta">
+        <time datetime={post.data.pubDate.toISOString()}>{fmt(post.data.pubDate)}</time>
+        {post.data.tags.map((t) => <a class="chip" href={`/blog/tags/${t}/`}>{t}</a>)}
+      </div>
+      <InkRule />
+    </header>
+    <div class="prose"><Content /></div>
+  </article>
+</Base>

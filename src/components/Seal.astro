@@ -1,0 +1,13 @@
+---
+// Monogram "hanko" stamp used as a stand-in for a logo.
+interface Props { mark: string; tone?: 'red' | 'ink' | 'indigo'; size?: number }
+const { mark, tone = 'red', size = 56 } = Astro.props;
+const fontSize = mark.length > 1 ? 21 : 30;
+---
+<svg class={`seal seal-${tone}`} width={size} height={size} viewBox="0 0 56 56" aria-hidden="true" focusable="false">
+  <g filter="url(#ink-rough-sm)">
+    <rect class="seal-bg" x="3" y="3" width="50" height="50" rx="5" />
+    <rect class="seal-line" x="7.5" y="7.5" width="41" height="41" rx="2" fill="none" />
+  </g>
+  <text class="seal-text" x="28" y="28" dy="0.35em" font-size={fontSize}>{mark}</text>
+</svg>

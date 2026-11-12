@@ -1,0 +1,20 @@
+---
+import Seal from './Seal.astro';
+import { journey } from '../data/site';
+---
+<ol class="journey">
+  <svg class="journey-line" viewBox="0 0 600 20" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+    <path filter="url(#ink-dry)" fill="var(--ink)" d="M0 10C60 5 140 4 240 7c90 3 170 0 250-3 50-2 90 0 110 3-30 7-90 12-170 12C340 19 120 18 0 10z" />
+  </svg>
+  {journey.map((j) => (
+    <li>
+      <Seal mark={j.mark} tone={j.tone} />
+      <div>
+        <span class="period">{j.period}</span>
+        <h3>{j.name}</h3>
+        <span class="role">{j.role}</span>
+        <p class="note">{j.note}</p>
+      </div>
+    </li>
+  ))}
+</ol>

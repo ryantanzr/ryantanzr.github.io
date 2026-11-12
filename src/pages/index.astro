@@ -1,0 +1,71 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import InkHero from '../components/InkHero.astro';
+import Journey from '../components/Journey.astro';
+import PostList from '../components/PostList.astro';
+import { site, projects } from '../data/site';
+
+const posts = (await getCollection('blog', (p) => !p.data.draft))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 3);
+---
+<Base description={site.tagline}>
+  <section class="hero">
+    <div class="hero-copy">
+      <p class="eyebrow">Software engineer · Singapore</p>
+      <h1>{site.fullName}</h1>
+      <p class="lede">{site.tagline}</p>
+      <div class="btns">
+        <a class="btn primary" href="/blog/">Read the blog</a>
+        <a class="btn" href="#contact">Get in touch</a>
+      </div>
+    </div>
+    <div class="hero-art"><InkHero /></div>
+  </section>
+
+  <section class="section" id="about">
+    <div class="statement">
+      <p class="pull">I like software that is quiet: the queues, ledgers and pipelines nobody notices until they fail.</p>
+      <p>
+        I'm Ryan, a computer science student at NUS. I spend most of my time on the unglamorous middle of a system,
+        where messages arrive twice, late or out of order, and the job is to make that not matter.
+      </p>
+      <p>
+        I care most about software that quietly does its job for real people, whether that's a family using a
+        messaging app or a merchant waiting on a payout, and I'm happiest when the interesting failures are the ones
+        nobody has to notice.
+      </p>
+      <p>This site is where I think out loud: notes on idempotency, observability, serverless, and whatever I learn the hard way.</p>
+    </div>
+  </section>
+
+  <section class="section" id="journey">
+    <h2>The path so far</h2>
+    <Journey />
+  </section>
+
+  <section class="section" id="work">
+    <h2>Things I've made</h2>
+    <ul class="work">
+      {projects.map((p) => (
+        <li>
+          <h3><a href={p.href}>{p.name}</a></h3>
+          <span class="stack">{p.stack.join(' · ')}</span>
+          <p>{p.summary}</p>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="section" id="writing">
+    <div class="section-head"><h2>Latest writing</h2><a href="/blog/">All posts →</a></div>
+    {posts.length ? <PostList posts={posts} /> : <p>Posts coming soon.</p>}
+  </section>
+
+  <section class="section hello" id="contact">
+    <h2>Say hello</h2>
+    <p>Always happy to talk about backend systems, assistive tech, or a good cup of tea.</p>
+    <a class="btn primary" href={`mailto:${site.email}`}>Email me</a>
+  </section>
+</Base>

@@ -1,0 +1,42 @@
+---
+// Sumi-e landscape misty ridges, sun/moon, one bamboo stalk pair.
+---
+<svg class="ink-hero" viewBox="0 0 960 340" role="img" aria-label="Ink wash painting of misty mountains under a sun and bamboo at the left" focusable="false">
+
+  <!-- stars (night only) -->
+  <g class="stars" fill="var(--ink)">
+    <circle cx="420" cy="30" r="1.6" /><circle cx="520" cy="62" r="1.2" /><circle cx="610" cy="22" r="1.8" />
+    <circle cx="780" cy="30" r="1.4" /><circle cx="880" cy="86" r="1.6" /><circle cx="330" cy="84" r="1.2" />
+    <circle cx="560" cy="112" r="1" /><circle cx="910" cy="28" r="1.2" />
+  </g>
+  <!-- sun (sets at night); rises from behind the ridge -->
+  <g class="sun">
+    <circle cx="690" cy="64" r="46" fill="var(--accent)" filter="url(#ink-rough)" opacity="0.92" />
+  </g>
+  <!-- moon (rises at night) -->
+  <g class="moon">
+    <circle cx="690" cy="64" r="64" fill="var(--ink)" opacity="0.16" filter="url(#ink-mist)" />
+    <circle cx="690" cy="64" r="40" fill="var(--ink)" filter="url(#ink-rough-sm)" />
+    <g fill="var(--bg)" opacity="0.16"><circle cx="676" cy="52" r="9" /><circle cx="704" cy="76" r="12" /><circle cx="696" cy="44" r="4" /><circle cx="678" cy="80" r="5" /></g>
+  </g>
+
+  <!-- opaque twin of the far range: the sun and moon rise from behind this ridge -->
+  <path d="M0 232Q70 172 130 202T250 152T380 206T520 122T660 192T800 152T960 206V340H0Z" fill="var(--bg)" filter="url(#ink-wash)" />
+  <!-- far range -->
+  <path d="M0 232Q70 172 130 202T250 152T380 206T520 122T660 192T800 152T960 206V340H0Z" fill="var(--ink)" opacity="0.1" filter="url(#ink-wash)" />
+  <ellipse cx="560" cy="210" rx="420" ry="20" fill="var(--bg)" opacity="0.85" filter="url(#ink-mist)" />
+  <!-- mid range -->
+  <path d="M0 272Q90 216 170 252T330 206T470 264T620 216T780 270T960 236V340H0Z" fill="var(--ink)" opacity="0.28" filter="url(#ink-wash)" />
+  <ellipse cx="420" cy="262" rx="460" ry="18" fill="var(--bg)" opacity="0.9" filter="url(#ink-mist)" />
+  <!-- near range -->
+  <path d="M0 312Q120 276 220 302T420 288T640 310T960 292V340H0Z" fill="var(--ink)" opacity="0.8" filter="url(#ink-rough)" />
+  <!-- bamboo: two stalks only -->
+  <g stroke="var(--ink)" stroke-linecap="round" filter="url(#ink-rough)" fill="none">
+    <path d="M62 330V44" stroke-width="7" /><path d="M96 330V120" stroke-width="5" />
+    <path d="M54 110h16M54 190h16M54 262h16M88 176h16M88 248h16" stroke-width="2.2" />
+  </g>
+  <g fill="var(--ink)" filter="url(#ink-rough)" opacity="0.9">
+    <path d="M64 110q26-18 62-6q-30 14-62 6z" /><path d="M62 190q-28-16-58-4q30 14 58 4z" />
+    <path d="M98 176q26-18 58-8q-28 14-58 8z" /><path d="M64 262q30-14 64-2q-32 14-64 2z" />
+  </g>
+</svg>

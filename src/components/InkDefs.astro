@@ -1,0 +1,32 @@
+---
+// Shared SVG filters that give shapes an organic, ink-on-paper edge.
+---
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <filter id="ink-rough" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="3" seed="7" result="n" />
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="9" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+    <!-- subtle version for small marks (seals) -->
+    <filter id="ink-rough-sm" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.09" numOctaves="2" seed="5" result="n" />
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="2.6" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+    <filter id="ink-dry" x="-5%" y="-30%" width="110%" height="160%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.015 0.7" numOctaves="2" seed="3" result="n" />
+      <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2.4 1.75" result="mask" />
+      <feComposite in="SourceGraphic" in2="mask" operator="in" result="dry" />
+      <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" seed="11" result="w" />
+      <feDisplacementMap in="dry" in2="w" scale="5" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+    <!-- soft wash edge for distant mountains and mist -->
+    <filter id="ink-wash" x="-5%" y="-20%" width="110%" height="140%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="2" seed="2" result="n" />
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="14" xChannelSelector="R" yChannelSelector="G" result="d" />
+      <feGaussianBlur in="d" stdDeviation="1.6" />
+    </filter>
+    <filter id="ink-mist" x="-20%" y="-100%" width="140%" height="300%">
+      <feGaussianBlur stdDeviation="16" />
+    </filter>
+  </defs>
+</svg>

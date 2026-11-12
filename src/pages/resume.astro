@@ -1,0 +1,67 @@
+---
+import Base from '../layouts/Base.astro';
+import InkRule from '../components/InkRule.astro';
+import { site, experience, projects, skills } from '../data/site';
+---
+<Base title="Resume" description={`Résumé of ${site.fullName}.`}>
+  <div class="post-head">
+    <p class="eyebrow">Resume</p>
+    <h1>{site.fullName}</h1>
+    <p style="color:var(--muted);margin:.75rem 0 0">
+      <a href={site.github}>GitHub</a> · <a href={site.linkedin}>LinkedIn</a> · <a href={`mailto:${site.email}`}>{site.email}</a>
+    </p>
+    <InkRule />
+  </div>
+
+  <section class="section" style="margin-top:2rem">
+    <h2>Experience</h2>
+    {experience.map((j) => (
+      <article class="job">
+        <div class="job-head">
+          <h3>{j.role} · <span class="org">{j.org}</span></h3>
+          <span class="period">{j.period}</span>
+        </div>
+        <ul>{j.points.map((pt) => <li>{pt}</li>)}</ul>
+      </article>
+    ))}
+  </section>
+
+  <section class="section" style="margin-top:3rem">
+    <h2>Achievements</h2>
+    <p style="margin:0">
+      <strong>Hult Prize 2026 (Assistive Technologies), Founder-in-residence.</strong> Awarded to founders of the top 60
+      student-run start-ups tackling at least one of the 17 UN SDGs, out of 18,000 international applicants.
+      <a href="https://credsverse.com/credentials/7aaa0f41-b807-4cc8-a656-30cec9371df0?preview=1">Credential ↗</a>
+    </p>
+  </section>
+
+  <section class="section" style="margin-top:3rem">
+    <h2>Education</h2>
+    <div class="job-head">
+      <h3>National University of Singapore</h3><span class="period">Aug 2023 – Jun 2027</span>
+    </div>
+    <p style="margin:.25rem 0">Bachelor of Computing in Computer Science</p>
+    <p style="color:var(--muted);font-size:.95rem;margin:0">
+      Coursework: Software Engineering Principles &amp; Practices (event-driven micro-services), Formal Methods for
+      Software Engineering, Database System Implementation, Big Data Systems for Data Science, Software Testing.
+    </p>
+  </section>
+
+  <section class="section" style="margin-top:3rem">
+    <h2>Projects</h2>
+    {projects.map((p) => (
+      <article class="job">
+        <div class="job-head">
+          <h3><a href={p.href}>{p.name}</a></h3><span class="period">{p.period}</span>
+        </div>
+        <p style="margin:.4rem 0;color:var(--muted)">{p.blurb}</p>
+        <ul class="chips">{p.stack.map((s) => <li class="chip">{s}</li>)}</ul>
+      </article>
+    ))}
+  </section>
+
+  <section class="section" style="margin-top:3rem">
+    <h2>Skills</h2>
+    <dl class="skills">{skills.map(([k, v]) => (<><dt>{k}</dt><dd>{v}</dd></>))}</dl>
+  </section>
+</Base>
