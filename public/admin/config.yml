@@ -1,6 +1,7 @@
 # Sveltia CMS: a writing UI for the blog, served at /admin.
 # Sign in with a GitHub fine-grained token (Contents: read & write on this repo).
 # Saving a post commits it to `main`, which triggers the GitHub Pages deploy.
+# New posts start as drafts: untick "Draft" when you're ready to publish.
 backend:
   name: github
   repo: ryantanzr/ryantanzr.github.io
@@ -16,17 +17,24 @@ collections:
   - name: blog
     label: Blog posts
     label_singular: Post
+    description: Everything under src/content/blog. Drafts are saved here but not published on the site.
     folder: src/content/blog
     extension: md
     format: frontmatter
     create: true
     slug: '{{slug}}'
+    preview_path: 'blog/{{slug}}'
     summary: '{{title}} · {{pubDate}}'
     sortable_fields: [pubDate, title]
+    sortable_fields_default: { field: pubDate, direction: desc }
+    view_filters:
+      - { label: Drafts, field: draft, pattern: true }
+      - { label: Published, field: draft, pattern: false }
     fields:
       - { label: Title, name: title, widget: string }
-      - { label: Description, name: description, widget: text, hint: 'One or two sentences shown in lists and link previews.' }
+      - { label: Body, name: body, widget: markdown, hint: 'Use Heading 2 for sections (the page builds a contents list). Start a quote with [!NOTE], [!TIP], [!WARNING] or [!IMPORTANT] for a callout.' }
+      - { label: Description, name: description, widget: text, required: false, hint: 'Optional. One or two sentences for lists and link previews; left empty, the first paragraph is used.' }
+      - { label: Tags, name: tags, widget: list, required: false, default: [], hint: 'Short and lowercase, e.g. go, idempotency, aws.' }
       - { label: Date, name: pubDate, widget: datetime, date_format: 'YYYY-MM-DD', time_format: false, picker_utc: true }
-      - { label: Tags, name: tags, widget: list, required: false, default: [] }
-      - { label: Draft, name: draft, widget: boolean, default: false, hint: 'Drafts are saved but not published on the site.' }
-      - { label: Body, name: body, widget: markdown }
+      - { label: Updated, name: updatedDate, widget: datetime, date_format: 'YYYY-MM-DD', time_format: false, picker_utc: true, required: false, hint: 'Only if you revise the post after publishing.' }
+      - { label: Draft, name: draft, widget: boolean, default: true, hint: 'On: saved but not published. Turn off to publish.' }

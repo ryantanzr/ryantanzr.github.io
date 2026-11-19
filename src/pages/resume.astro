@@ -5,7 +5,6 @@ import { site, experience, projects, skills } from '../data/site';
 ---
 <Base title="Resume" description={`Résumé of ${site.fullName}.`}>
   <div class="post-head">
-    <p class="eyebrow">Resume</p>
     <h1>{site.fullName}</h1>
     <p class="muted lede-sm">
       <a href={site.github} rel="noopener noreferrer">GitHub</a> · <a href={site.linkedin} rel="noopener noreferrer">LinkedIn</a> · <a href={`mailto:${site.email}`}>{site.email}</a>
@@ -31,7 +30,7 @@ import { site, experience, projects, skills } from '../data/site';
     <p class="m0">
       <strong>Hult Prize 2026 (Assistive Technologies), Founder-in-residence.</strong> Awarded to founders of the top 60
       student-run start-ups tackling at least one of the 17 UN SDGs, out of 18,000 international applicants.
-      <a rel="noopener noreferrer" href="https://credsverse.com/credentials/7aaa0f41-b807-4cc8-a656-30cec9371df0?preview=1">Credential ↗</a>
+      <a class="ext" rel="noopener noreferrer" href="https://credsverse.com/credentials/7aaa0f41-b807-4cc8-a656-30cec9371df0?preview=1">Credential</a>
     </p>
   </section>
 
@@ -52,7 +51,7 @@ import { site, experience, projects, skills } from '../data/site';
     {projects.map((p) => (
       <article class="job">
         <div class="job-head">
-          <h3><a href={p.href} rel="noopener noreferrer">{p.name}</a></h3><span class="period">{p.period}</span>
+          <h3><a class="ext" href={p.href} rel="noopener noreferrer">{p.name}</a></h3><span class="period">{p.period}</span>
         </div>
         <p class="blurb">{p.blurb}</p>
         <ul class="chips">{p.stack.map((s) => <li class="chip">{s}</li>)}</ul>

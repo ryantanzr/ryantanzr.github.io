@@ -1,11 +1,10 @@
 ---
-import { getCollection } from 'astro:content';
 import Base from '../../../layouts/Base.astro';
 import PostList from '../../../components/PostList.astro';
+import { getPosts } from '../../../lib/posts';
 
 export async function getStaticPaths() {
-  const posts = (await getCollection('blog', (p) => !p.data.draft))
-    .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+  const posts = await getPosts();
   const tags = [...new Set(posts.flatMap((p) => p.data.tags))];
   return tags.map((tag) => ({
     params: { tag },
@@ -17,7 +16,7 @@ const { posts } = Astro.props;
 ---
 <Base title={`#${tag}`} description={`Posts tagged ${tag}`}>
   <div class="post-head flush">
-    <p class="eyebrow"><a href="/blog/" class="plain">/blog</a>/tags</p>
+    <a class="back" href="/blog/">All posts</a>
     <h1>#{tag}</h1>
   </div>
   <PostList posts={posts} />

@@ -1,27 +1,64 @@
 ---
-import { getCollection, render } from 'astro:content';
+import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import InkRule from '../../components/InkRule.astro';
+import { describe, fmtLong, getPosts, readingMinutes } from '../../lib/posts';
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blog', (p) => !p.data.draft);
-  return posts.map((post) => ({ params: { id: post.id }, props: { post } }));
+  const posts = await getPosts();
+  return posts.map((post, i) => ({
+    params: { id: post.id },
+    // the list is newest-first, so the next index is the older post
+    props: { post, newer: posts[i - 1], older: posts[i + 1] },
+  }));
 }
-const { post } = Astro.props;
-const { Content, remarkPluginFrontmatter } = await render(post);
-const fmt = (d: Date) => d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+const { post, newer, older } = Astro.props;
+const { Content, headings } = await render(post);
+const toc = headings.filter((h) => h.depth === 2);
+const minutes = readingMinutes(post.body);
 ---
-<Base title={post.data.title} description={post.data.description} type="article">
+<Base
+  title={post.data.title}
+  description={describe(post)}
+  type="article"
+  published={post.data.pubDate}
+  updated={post.data.updatedDate}
+  noindex={post.data.draft}
+>
   <article>
     <header class="post-head">
-      <p class="eyebrow"><a href="/blog/" class="plain">← all posts</a></p>
+      <a class="back" href="/blog/">All posts</a>
       <h1>{post.data.title}</h1>
       <div class="meta">
-        <time datetime={post.data.pubDate.toISOString()}>{fmt(post.data.pubDate)}</time>
+        {post.data.draft && <span class="badge">Draft, only visible here</span>}
+        <time datetime={post.data.pubDate.toISOString()}>{fmtLong(post.data.pubDate)}</time>
+        {post.data.updatedDate && (
+          <span>Updated <time datetime={post.data.updatedDate.toISOString()}>{fmtLong(post.data.updatedDate)}</time></span>
+        )}
+        <span>{minutes} min read</span>
         {post.data.tags.map((t) => <a class="chip" href={`/blog/tags/${t}/`}>{t}</a>)}
       </div>
       <InkRule />
     </header>
+
+    {toc.length >= 3 && (
+      <details class="toc">
+        <summary>On this page</summary>
+        <ol>{toc.map((h) => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}</ol>
+      </details>
+    )}
+
     <div class="prose"><Content /></div>
   </article>
+
+  {(newer || older) && (
+    <nav class="post-nav" aria-label="More posts">
+      {older ? <a class="prev" href={`/blog/${older.id}/`}><span>Older</span>{older.data.title}</a> : <span />}
+      {newer ? <a class="next" href={`/blog/${newer.id}/`}><span>Newer</span>{newer.data.title}</a> : <span />}
+    </nav>
+  )}
+  <div class="progress" id="progress" aria-hidden="true"></div>
+  <script>
+    import '../../scripts/post';
+  </script>
 </Base>

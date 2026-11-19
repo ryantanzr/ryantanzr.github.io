@@ -12,7 +12,6 @@ function apply(theme: 'dark' | 'light') {
   root.dataset.theme = theme;
   try { localStorage.setItem('theme', theme); } catch {}
   if (btn) {
-    btn.textContent = theme === 'dark' ? '☀' : '☾';
     btn.setAttribute('aria-label', theme === 'dark' ? 'Switch to day mode' : 'Switch to night mode');
   }
 }

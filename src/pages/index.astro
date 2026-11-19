@@ -1,20 +1,18 @@
 ---
-import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import InkHero from '../components/InkHero.astro';
 import Journey from '../components/Journey.astro';
 import PostList from '../components/PostList.astro';
 import { site, projects } from '../data/site';
+import { getPublishedPosts } from '../lib/posts';
 
-const posts = (await getCollection('blog', (p) => !p.data.draft))
-  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-  .slice(0, 3);
+const posts = (await getPublishedPosts()).slice(0, 3);
 ---
 <Base description={site.tagline}>
   <section class="hero">
     <div class="hero-copy">
-      <p class="eyebrow">Software engineer · Singapore</p>
       <h1>{site.fullName}</h1>
+      <p class="where">Software engineer · Singapore</p>
       <p class="lede">{site.tagline}</p>
       <div class="btns">
         <a class="btn primary" href="/blog/">Read the blog</a>
@@ -50,7 +48,7 @@ const posts = (await getCollection('blog', (p) => !p.data.draft))
     <ul class="work">
       {projects.map((p) => (
         <li>
-          <h3><a href={p.href} rel="noopener noreferrer">{p.name}</a></h3>
+          <h3><a class="ext" href={p.href} rel="noopener noreferrer">{p.name}</a></h3>
           <span class="stack">{p.stack.join(' · ')}</span>
           <p>{p.summary}</p>
         </li>

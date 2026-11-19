@@ -12,7 +12,7 @@ npm run build
 
 ## Write a blog post
 
-**Option 1: the writing UI (easiest).** Go to `https://ryantanzr.github.io/admin/`, sign in with a GitHub token, click **New Post**, write, and hit **Save**. It commits to `main` and the site redeploys in about a minute.
+**Option 1: the writing UI (easiest).** Go to `https://ryantanzr.github.io/admin/`, sign in with a GitHub token, click **New Post**, write, and hit **Save**. It commits to `main` and the site redeploys in about a minute. New posts start as **drafts**; untick **Draft** when you're ready to publish. Only the title and body are required; leave the description empty and the first paragraph is used for previews.
 
 First-time sign-in needs a fine-grained token:
 
@@ -21,16 +21,24 @@ First-time sign-in needs a fine-grained token:
 3. Permissions → Repository permissions → **Contents: Read and write**. Nothing else.
 4. Paste it into the "Sign in with token" box on `/admin`. The browser remembers it; revoke it from the same GitHub page whenever you like.
 
-Tick **Draft** to save without publishing.
-
 **Option 2: in your editor.**
 
 ```bash
-npm run new-post -- "My post title"   # creates src/content/blog/my-post-title.md as a draft
-npm run dev                            # preview at http://localhost:4321/blog/
+npm run new-post -- "My post title" --tags go,idempotency   # creates src/content/blog/my-post-title.md as a draft
+npm run dev                                                 # drafts are visible at http://localhost:4321/blog/ while this runs
+npm run publish-post -- my-post-title                       # flips draft off and stamps today's date
+git add -A && git commit -m "Post: my post title" && git push
 ```
 
-Fill in `description`, set `draft: false`, then commit and push to `main`.
+`npm run posts` lists every post and whether it's a draft or live; `npm run unpublish-post -- <slug>` turns one back into a draft. Drafts never reach the built site, the RSS feed or the sitemap.
+
+**What a post can do.** Open `src/content/blog/writing-cheatsheet.md` (a draft, visible under `npm run dev`) for a copyable example of everything:
+
+- `##` sections build an "On this page" list automatically (three or more).
+- Code blocks are highlighted for light and dark, labelled with the language, and get a copy button.
+- Callouts: start a quote with `> [!NOTE]`, `[!TIP]`, `[!IMPORTANT]`, `[!WARNING]` or `[!CAUTION]`.
+- Tables, task lists, footnotes, reading time, older/newer links and a reading-progress line come for free.
+- Optional `updatedDate` shows an "Updated" line when you revise a post.
 
 Images: drop them in `public/images/blog/` and reference them as `![alt](/images/blog/pic.png)`. (The writing UI does this for you.)
 
