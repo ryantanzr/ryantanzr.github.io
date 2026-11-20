@@ -1,12 +1,9 @@
 ---
-// Shared SVG filters that give every drawn shape an organic ink-on-washi edge, plus the lotus symbol.
+// Small SVG filters for small marks only (seals, ensō, dividers), plus the lotus symbol.
+// Large scenes (the grove) bake their wobble into geometry instead: a filter over a big area repaints on the CPU.
 ---
 <svg class="ink-defs" width="0" height="0" aria-hidden="true" focusable="false">
   <defs>
-    <filter id="ink-rough" x="-10%" y="-10%" width="120%" height="120%">
-      <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="3" seed="7" result="n" />
-      <feDisplacementMap in="SourceGraphic" in2="n" scale="9" xChannelSelector="R" yChannelSelector="G" />
-    </filter>
     <!-- subtle version for small marks (seals, ensō) -->
     <filter id="ink-rough-sm" x="-10%" y="-10%" width="120%" height="120%">
       <feTurbulence type="fractalNoise" baseFrequency="0.09" numOctaves="2" seed="5" result="n" />
@@ -19,15 +16,6 @@
       <feComposite in="SourceGraphic" in2="mask" operator="in" result="dry" />
       <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" seed="11" result="w" />
       <feDisplacementMap in="dry" in2="w" scale="5" xChannelSelector="R" yChannelSelector="G" />
-    </filter>
-    <!-- soft wash edge for distant bamboo -->
-    <filter id="ink-wash" x="-5%" y="-5%" width="110%" height="110%">
-      <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="2" seed="2" result="n" />
-      <feDisplacementMap in="SourceGraphic" in2="n" scale="14" xChannelSelector="R" yChannelSelector="G" result="d" />
-      <feGaussianBlur in="d" stdDeviation="2.2" />
-    </filter>
-    <filter id="ink-mist" x="-20%" y="-100%" width="140%" height="300%">
-      <feGaussianBlur stdDeviation="22" />
     </filter>
     <!-- side-view lotus, five petals on the waterline -->
     <symbol id="lotus" viewBox="0 0 48 32">

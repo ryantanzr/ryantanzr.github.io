@@ -25,12 +25,11 @@
   --code-bg: #e0e3c8;
   --sun: #d9ab3c;
   --halo: #e8c862;
-  --sun-show: inline;
-  --glow-y: 37%;
   --glow-x: 50%;
+  --glow-lift: 0rem;
   --sun-dx: 0px;
-  --moon-show: none;
-  --sun-dy: 0px;
+  --sun-o: 0.95; --sun-y: 0rem;
+  --moon-o: 0; --moon-y: 9rem;
   --scrim: 0.82;
   --font-body: 'Lato', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-display: 'Shippori Mincho', 'Hiragino Mincho ProN', 'Yu Mincho', 'Noto Serif', serif;
@@ -40,6 +39,8 @@
   --arrow-r: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'><path d='M1.5 6h9M7 2.5 10.5 6 7 9.5' fill='none' stroke='black' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/></svg>");
   --arrow: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'><path d='M3 9 9 3M4 3h5v5' fill='none' stroke='black' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/></svg>");
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --dusk: cubic-bezier(0.4, 0, 0.2, 1);
+  --grain: 0.16;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
@@ -47,7 +48,7 @@
     --bg: #141a0f; --surface: #1b2315; --text: #ebe5cb; --ink: #d6cfae; --muted: #adab8e; --line: #2c3622;
     --green: #9dba74; --green-soft: #5f7d42; --gold: #d4ad55; --gold-ink: #dcb860; --gold-wash: #3a3318; --brown: #c9a073;
     --bark: #0c1008; --leaf: #35502a; --accent: #a9c77c; --accent-soft: #232d1a; --on-accent: #141a0f; --code-bg: #1a2214;
-    --sun: #ebe4b8; --halo: #b9a652; --sun-show: none; --moon-show: inline; --sun-dy: -40px; --glow-y: 31%; --scrim: 0.7;
+    --sun: #ebe4b8; --halo: #b9a652; --sun-o: 0; --sun-y: 9rem; --moon-o: 0.95; --moon-y: 0rem; --glow-lift: -3rem; --scrim: 0.7; --grain: 0.03;
     color-scheme: dark;
   }
 }
@@ -55,9 +56,38 @@
   --bg: #141a0f; --surface: #1b2315; --text: #ebe5cb; --ink: #d6cfae; --muted: #adab8e; --line: #2c3622;
   --green: #9dba74; --green-soft: #5f7d42; --gold: #d4ad55; --gold-ink: #dcb860; --gold-wash: #3a3318; --brown: #c9a073;
   --bark: #0c1008; --leaf: #35502a; --accent: #a9c77c; --accent-soft: #232d1a; --on-accent: #141a0f; --code-bg: #1a2214;
-  --sun: #ebe4b8; --halo: #b9a652; --sun-show: none; --moon-show: inline; --sun-dy: -40px; --glow-y: 31%; --scrim: 0.7;
+  --sun: #ebe4b8; --halo: #b9a652; --sun-o: 0; --sun-y: 9rem; --moon-o: 0.95; --moon-y: 0rem; --glow-lift: -3rem; --scrim: 0.7; --grain: 0.03;
   color-scheme: dark;
 }
+
+/* The theme is a slow dusk, not a switch: every colour token is registered so the browser can tween it,
+   and everything drawn from a token (text, strokes, gradients, the washi) shifts together. */
+@property --bg { syntax: '<color>'; inherits: true; initial-value: #e8ead3; }
+@property --surface { syntax: '<color>'; inherits: true; initial-value: #f0f1de; }
+@property --text { syntax: '<color>'; inherits: true; initial-value: #1f1a10; }
+@property --ink { syntax: '<color>'; inherits: true; initial-value: #2a2214; }
+@property --muted { syntax: '<color>'; inherits: true; initial-value: #58543b; }
+@property --line { syntax: '<color>'; inherits: true; initial-value: #c9cbb0; }
+@property --green { syntax: '<color>'; inherits: true; initial-value: #3f5b29; }
+@property --green-soft { syntax: '<color>'; inherits: true; initial-value: #7a9a58; }
+@property --gold { syntax: '<color>'; inherits: true; initial-value: #bd9230; }
+@property --gold-ink { syntax: '<color>'; inherits: true; initial-value: #7a5710; }
+@property --gold-wash { syntax: '<color>'; inherits: true; initial-value: #e6d49a; }
+@property --brown { syntax: '<color>'; inherits: true; initial-value: #5a3d28; }
+@property --bark { syntax: '<color>'; inherits: true; initial-value: #3a2c1a; }
+@property --leaf { syntax: '<color>'; inherits: true; initial-value: #4d6a32; }
+@property --accent { syntax: '<color>'; inherits: true; initial-value: #3f5b29; }
+@property --accent-soft { syntax: '<color>'; inherits: true; initial-value: #dfe3c4; }
+@property --on-accent { syntax: '<color>'; inherits: true; initial-value: #f4f1dc; }
+@property --code-bg { syntax: '<color>'; inherits: true; initial-value: #e0e3c8; }
+@property --sun { syntax: '<color>'; inherits: true; initial-value: #d9ab3c; }
+@property --halo { syntax: '<color>'; inherits: true; initial-value: #e8c862; }
+@property --scrim { syntax: '<number>'; inherits: true; initial-value: 0.82; }
+@property --grain { syntax: '<number>'; inherits: true; initial-value: 0.16; }
+:root { transition: --bg 1.7s var(--dusk), --surface 1.7s var(--dusk), --line 1.7s var(--dusk), --code-bg 1.7s var(--dusk), --accent-soft 1.7s var(--dusk), --gold-wash 1.7s var(--dusk), --sun 1.7s var(--dusk), --halo 1.7s var(--dusk), --leaf 1.7s var(--dusk), --bark 1.7s var(--dusk), --green-soft 1.7s var(--dusk), --scrim 1.7s var(--dusk), --grain 1.7s var(--dusk), --text 0.5s 0.6s var(--dusk), --ink 0.5s 0.6s var(--dusk), --muted 0.5s 0.6s var(--dusk), --accent 0.5s 0.6s var(--dusk), --on-accent 0.5s 0.6s var(--dusk), --gold-ink 0.5s 0.6s var(--dusk), --green 0.5s 0.6s var(--dusk), --brown 0.5s 0.6s var(--dusk), --gold 0.5s 0.6s var(--dusk); }
+/* the lettering changes late and quickly, so it crosses the darkening ground in a moment instead of lingering at grey on grey */
+@media (prefers-reduced-motion: reduce) { :root { transition: --bg 0.6s var(--dusk), --surface 0.6s var(--dusk), --line 0.6s var(--dusk), --code-bg 0.6s var(--dusk), --accent-soft 0.6s var(--dusk), --gold-wash 0.6s var(--dusk), --sun 0.6s var(--dusk), --halo 0.6s var(--dusk), --leaf 0.6s var(--dusk), --bark 0.6s var(--dusk), --green-soft 0.6s var(--dusk), --scrim 0.6s var(--dusk), --grain 0.6s var(--dusk), --text 0.25s 0.2s var(--dusk), --ink 0.25s 0.2s var(--dusk), --muted 0.25s 0.2s var(--dusk), --accent 0.25s 0.2s var(--dusk), --on-accent 0.25s 0.2s var(--dusk), --gold-ink 0.25s 0.2s var(--dusk), --green 0.25s 0.2s var(--dusk), --brown 0.25s 0.2s var(--dusk), --gold 0.25s 0.2s var(--dusk); } }
+:root[data-tween] :is(a, .btn, .chip, .theme-btn, .copy, .post-list li) { transition-property: none; }
 
 * { box-sizing: border-box; }
 html { scrollbar-color: var(--green-soft) transparent; scrollbar-width: thin; accent-color: var(--accent); }
@@ -72,16 +102,13 @@ body {
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
 }
-/* washi fibre */
+/* washi fibre: a plain translucent tile (no blend mode, so scrolling never re-blends the page) */
 body::before {
   content: '';
   position: fixed; inset: 0; z-index: 100; pointer-events: none;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='p'><feTurbulence type='fractalNoise' baseFrequency='0.8 0.12' numOctaves='3' seed='4'/><feColorMatrix values='0 0 0 0 0.3  0 0 0 0 0.3  0 0 0 0 0.16  0 0 0 0.55 0'/></filter><rect width='100%' height='100%' filter='url(%23p)'/></svg>");
-  opacity: 0.22;
-  mix-blend-mode: multiply;
+  opacity: var(--grain);
 }
-:root[data-theme='dark'] body::before { opacity: 0.05; mix-blend-mode: screen; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme='light']) body::before { opacity: 0.05; mix-blend-mode: screen; } }
 a { color: inherit; text-decoration-color: var(--gold); text-decoration-thickness: 1px; text-underline-offset: 4px; transition: color 0.5s var(--ease), text-decoration-color 0.5s var(--ease); }
 a:hover { color: var(--accent); text-decoration-thickness: 2px; }
 input, textarea { caret-color: var(--green); }
@@ -104,23 +131,31 @@ p { text-wrap: pretty; }
 .nav a:hover, .nav a[aria-current='page'] { color: var(--text); background-size: 100% 1px; }
 @media (max-width: 30rem) { .nav { gap: 0.8rem; font-size: 0.86rem; } .brand { font-size: 1.2rem; } .theme-btn { width: 2.25rem; height: 2.25rem; } }
 
-/* theme toggle: a lotus that opens by day and closes at night */
-.theme-btn { display: grid; place-items: center; line-height: 1; background: none; border: 1px solid var(--line); color: var(--gold-ink); border-radius: 999px; width: 2.5rem; height: 2.5rem; cursor: pointer; transition: border-color 0.6s var(--ease), color 0.6s var(--ease), background-color 0.6s var(--ease); }
+/* theme toggle: a lotus that closes at night and opens by day; a ring spreads from it like a ripple on the pond */
+.theme-btn { position: relative; display: grid; place-items: center; line-height: 1; background: none; border: 1px solid var(--line); color: var(--gold-ink); border-radius: 999px; width: 2.5rem; height: 2.5rem; cursor: pointer; transition: border-color 0.6s var(--ease), color 0.6s var(--ease), background-color 0.6s var(--ease); }
 .theme-btn:hover { border-color: var(--gold); background: var(--gold-wash); }
+.theme-btn::after { content: ''; position: absolute; inset: -1px; border-radius: 999px; border: 1px solid var(--gold); opacity: 0; pointer-events: none; }
 .lotus-tg { overflow: visible; }
-.tp { fill: var(--gold-wash); stroke: currentColor; stroke-width: 1.5; stroke-linejoin: round; transform-origin: 24px 29px; transition: transform 1.4s var(--ease), fill 1.2s var(--ease); }
+.tp { fill: var(--gold-wash); stroke: currentColor; stroke-width: 1.5; stroke-linejoin: round; transform-origin: 24px 29px; transition: transform 1.7s var(--dusk); }
 .tp-c { fill: var(--gold); }
+/* opening: the heart first, the outer petals last. Closing runs the other way. */
+.tp-c { transition-delay: 0s; } .tp-mid-l, .tp-mid-r { transition-delay: 0.18s; } .tp-out-l, .tp-out-r { transition-delay: 0.36s; }
 :root[data-theme='dark'] .tp-out-l { transform: rotate(34deg); }
 :root[data-theme='dark'] .tp-out-r { transform: rotate(-34deg); }
 :root[data-theme='dark'] .tp-mid-l { transform: rotate(20deg); }
 :root[data-theme='dark'] .tp-mid-r { transform: rotate(-20deg); }
-:root[data-theme='dark'] .tp { fill: var(--gold-wash); }
+:root[data-theme='dark'] .tp-c { transform: scaleY(1.08); }
+:root[data-theme='dark'] .tp-out-l, :root[data-theme='dark'] .tp-out-r { transition-delay: 0s; }
+:root[data-theme='dark'] .tp-mid-l, :root[data-theme='dark'] .tp-mid-r { transition-delay: 0.18s; }
+:root[data-theme='dark'] .tp-c { transition-delay: 0.36s; }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']):not([data-theme='dark']) .tp-out-l { transform: rotate(34deg); }
   :root:not([data-theme='light']):not([data-theme='dark']) .tp-out-r { transform: rotate(-34deg); }
   :root:not([data-theme='light']):not([data-theme='dark']) .tp-mid-l { transform: rotate(20deg); }
   :root:not([data-theme='light']):not([data-theme='dark']) .tp-mid-r { transform: rotate(-20deg); }
 }
+@keyframes bloom { 0% { opacity: 0; transform: scale(1); } 6% { opacity: 0.6; } 100% { opacity: 0; transform: scale(2.4); } }
+@media (prefers-reduced-motion: no-preference) { .theme-btn.ripple::after { animation: bloom 1.8s var(--dusk) both; } }
 
 /* footer */
 .beads { display: block; width: 100%; max-width: 44rem; height: auto; margin: 6rem auto 0; }
@@ -173,31 +208,39 @@ h2 { font-size: clamp(1.8rem, 4vw, 2.5rem); }
 .grove svg { position: absolute; display: block; }
 .g-deep, .g-front { position: absolute; inset: 0; }
 .g-far, .g-mid, .g-sun { left: 0; top: -4rem; width: 100%; height: calc(100% + 4rem); }
-.g-glow { position: absolute; left: var(--glow-x); top: var(--glow-y); width: min(110vw, 58rem); aspect-ratio: 1; transform: translate(-50%, -50%); background: radial-gradient(closest-side, color-mix(in srgb, var(--halo) 60%, transparent), color-mix(in srgb, var(--halo) 22%, transparent) 46%, transparent); }
-.g-mist { left: 0; width: 200%; height: 100%; top: 0; }
-.mist { fill: var(--bg); opacity: 0.8; }
-.mist-low { opacity: 0.9; }
+.g-sun svg { inset: 0; width: 100%; height: 100%; }
+.g-glow { position: absolute; left: var(--glow-x); top: 37%; width: min(110vw, 58rem); aspect-ratio: 1; transform: translate(-50%, calc(-50% + var(--glow-lift))); background: radial-gradient(closest-side, color-mix(in srgb, var(--halo) 60%, transparent), color-mix(in srgb, var(--halo) 22%, transparent) 46%, transparent); transition: transform 1.9s var(--dusk); }
+/* mist: soft ellipses of ground colour, drawn as gradients so there is nothing to blur */
+.g-mist { position: absolute; left: 0; width: 200%; --m: color-mix(in srgb, var(--bg) 80%, transparent); }
+.g-mist-a { top: 48%; height: 36%; background:
+  radial-gradient(ellipse 26% 40% at 17% 48%, var(--m) 28%, transparent),
+  radial-gradient(ellipse 24% 38% at 52% 34%, var(--m) 28%, transparent),
+  radial-gradient(ellipse 23% 40% at 80% 52%, var(--m) 28%, transparent); }
+.g-mist-b { top: 62%; height: 30%; --m: color-mix(in srgb, var(--bg) 90%, transparent); background:
+  radial-gradient(ellipse 27% 44% at 24% 76%, var(--m) 28%, transparent),
+  radial-gradient(ellipse 25% 42% at 66% 64%, var(--m) 28%, transparent); }
 .g-near { bottom: 0; height: 100%; width: auto; aspect-ratio: 520 / 900; max-width: 13%; transform-origin: 50% 100%; --fade-x: right; -webkit-mask-image: linear-gradient(to bottom, transparent 3.5rem, #000 15rem), linear-gradient(to var(--fade-x), #000 70%, transparent); -webkit-mask-composite: source-in; mask-image: linear-gradient(to bottom, transparent 3.5rem, #000 15rem), linear-gradient(to var(--fade-x), #000 70%, transparent); mask-composite: intersect; }
 .g-near-r { --fade-x: left; }
 @media (max-width: 48rem) { .g-near { max-width: 15%; opacity: 0.7; } }
 .g-near-l { left: 0; }
 .g-near-r { right: 0; }
-.stk { stroke-width: 1; }
-.stk-far { stroke: var(--green-soft); opacity: 0.3; }
-.stk-mid { stroke: var(--green-soft); opacity: 0.55; }
-.stk-near { stroke: var(--bark); opacity: 0.94; }
+.stk-far { stroke: var(--green-soft); }
+.stk-mid { stroke: var(--green-soft); }
+.stk-near { stroke: var(--bark); }
+/* each culm is drawn twice from one path: a faint wide pass for the ink bleed, then the stroke itself */
+.g-far .halo { stroke-width: 15; opacity: 0.1; } .g-far .core { stroke-width: 8; opacity: 0.3; }
+.g-mid .halo { stroke-width: 26; opacity: 0.13; } .g-mid .core { stroke-width: 15; opacity: 0.55; }
+.g-near .halo { stroke-width: 40; opacity: 0.22; } .g-near .core { stroke-width: 30; opacity: 0.94; }
+.nod { stroke-width: 3; opacity: 0.3; }
+.g-mid .nod { opacity: 0.55; }
+.g-near .nod { stroke-width: 5; opacity: 0.94; }
 .leaf-mid { fill: var(--green-soft); opacity: 0.5; }
 .leaf-near { fill: var(--leaf); opacity: 0.95; }
-.sun-g { transform: translate(var(--sun-dx), var(--sun-dy)); }
-.orb { fill: var(--sun); opacity: 0.95; }
-.orb-sun { display: var(--sun-show); }
-.orb-moon { display: var(--moon-show); }
-/* stalk widths are per-path in the generator, so a single stroke-width is set here by depth */
-.g-far path { stroke-width: 8; }
-.g-mid path { stroke-width: 15; }
-.g-near path { stroke-width: 30; }
-.g-far .nod, .g-mid .nod, .g-near .nod { stroke-width: 3; }
-.g-near .nod { stroke: var(--bark); stroke-width: 5; }
+.sun-g { transform: translate(var(--sun-dx), 0); }
+.orb { fill: var(--sun); }
+/* the sun sets and the moon rises behind the grove: each is its own compositor layer, so nothing repaints while they move */
+.orb-d { opacity: var(--sun-o); transform: translateY(var(--sun-y)); transition: transform 1.7s var(--dusk), opacity 1.5s var(--dusk); }
+.orb-n { opacity: var(--moon-o); transform: translateY(var(--moon-y)); transition: transform 2s 0.2s var(--dusk), opacity 1.5s var(--dusk); }
 
 .btns { display: flex; flex-wrap: wrap; gap: 0.75rem; }
 .btn { display: inline-block; padding: 0.65rem 1.35rem; font-size: 0.95rem; letter-spacing: 0.04em; border: 1px solid var(--brown); border-radius: 999px; text-decoration: none; background: transparent; transition: color 0.5s var(--ease), background-color 0.7s var(--ease), border-color 0.5s var(--ease), transform 0.5s var(--ease); }
@@ -407,6 +450,8 @@ a.chip:hover { border-color: var(--gold); color: var(--text); background: var(--
   .hero-copy > :nth-child(2) { animation-delay: 0.35s; }
   .hero-copy > :nth-child(3) { animation-delay: 0.5s; }
   .hero-copy > :nth-child(4) { animation-delay: 0.65s; }
+  /* endless loops rest whenever their scene is off screen (see scripts/scene.ts) */
+  .hero[data-off] .g-near, .hero[data-off] .g-mist { animation-play-state: paused; }
   .pond .ripple { animation: ring 9s ease-out infinite; }
   .pond .r2 { animation-delay: 3s; } .pond .r3 { animation-delay: 6s; }
   /* parallax where the browser supports scroll timelines; harmless elsewhere */
@@ -416,9 +461,12 @@ a.chip:hover { border-color: var(--gold); color: var(--text); background: var(--
   }
 }
 
-/* the theme cross-fades slowly; the lotus opens or closes as it does */
-::view-transition-group(root) { animation-duration: 1.1s; animation-timing-function: var(--ease); }
-@media (prefers-reduced-motion: reduce) { ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none; } .tp { transition: none; } }
+/* reduced motion: the day and night still change, but by colour and opacity alone, with nothing travelling */
+@media (prefers-reduced-motion: reduce) {
+  .orb-d, .orb-n { transform: none; transition: opacity 0.6s ease; }
+  .g-glow { transition: none; transform: translate(-50%, calc(-50% - 1.5rem)); }
+  .tp { transition: none; }
+}
 
 /* utilities (no inline styles, so the CSP can stay strict) */
 .ink-defs { position: absolute; width: 0; height: 0; }

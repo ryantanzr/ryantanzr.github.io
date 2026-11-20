@@ -1,6 +1,8 @@
 ---
 // A bamboo grove at dawn: three depths of ink bamboo, a low sun and drifting mist.
 // The stalks are generated from a fixed seed, so the grove is the same on every build.
+// Every hand-drawn wobble is baked into the geometry here, so the browser never runs an SVG
+// displacement or blur filter over the scene (those cost ~0.7s of CPU per paint on a laptop).
 function rng(seed: number) {
   return () => {
     seed = (seed + 0x6d2b79f5) | 0;
@@ -9,26 +11,68 @@ function rng(seed: number) {
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
 }
-const f = (n: number) => n.toFixed(1);
+const R = Math.round;
+type Pt = [number, number];
 
+/** Smooth closed or open curve through points (Catmull-Rom as relative cubic Béziers, whole numbers). */
+function smooth(pts: Pt[], closed = false) {
+  const n = pts.length;
+  const get = (i: number): Pt => (closed ? pts[(i + n) % n] : pts[Math.max(0, Math.min(n - 1, i))]);
+  let last: Pt = [R(pts[0][0]), R(pts[0][1])];
+  let d = `M${last[0]} ${last[1]}`;
+  const segs = closed ? n : n - 1;
+  for (let i = 0; i < segs; i++) {
+    const p0 = get(i - 1), p1 = get(i), p2 = get(i + 1), p3 = get(i + 2);
+    const c1: Pt = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6];
+    const c2: Pt = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+    const e: Pt = [R(p2[0]), R(p2[1])];
+    d += `c${R(c1[0]) - last[0]} ${R(c1[1]) - last[1]} ${R(c2[0]) - last[0]} ${R(c2[1]) - last[1]} ${e[0] - last[0]} ${e[1] - last[1]}`;
+    last = e;
+  }
+  return d + (closed ? 'z' : '');
+}
+
+/** A disc with a slightly uneven brushed edge. */
+function blob(cx: number, cy: number, r: number, seed: number) {
+  const q = rng(seed);
+  const a = q() * 6.28, b = q() * 6.28;
+  const pts: Pt[] = Array.from({ length: 28 }, (_, i) => {
+    const t = (i / 28) * Math.PI * 2;
+    const k = 1 + 0.016 * Math.sin(3 * t + a) + 0.011 * Math.sin(5 * t + b);
+    return [cx + Math.cos(t) * r * k, cy + Math.sin(t) * r * k];
+  });
+  return smooth(pts, true);
+}
+
+type Wob = { a1: number; w1: number; a2: number; w2: number; step: number };
 type Opts = { x: number; top: number; w: number; lean: number; leaf?: number; leafLen?: number; gap?: number };
 
-/** One culm as a stroked curve plus its node marks and (optionally) leaves; returns path data strings. */
-function culm(r: () => number, H: number, o: Opts) {
+/** One culm as a hand-wobbled curve plus its node marks and (optionally) leaves; returns path data strings. */
+function culm(r: () => number, H: number, o: Opts, wob: Wob) {
   const y1 = H + 20;
-  const p0 = [o.x, y1], p1 = [o.x + o.lean, o.top], c = [o.x + o.lean * 0.2 + (r() - 0.5) * 14, (y1 + o.top) / 2];
-  const at = (t: number) => [
-    (1 - t) ** 2 * p0[0] + 2 * (1 - t) * t * c[0] + t * t * p1[0],
-    (1 - t) ** 2 * p0[1] + 2 * (1 - t) * t * c[1] + t * t * p1[1],
-  ];
-  const body = `M${f(p0[0])} ${f(p0[1])}Q${f(c[0])} ${f(c[1])} ${f(p1[0])} ${f(p1[1])}`;
+  const p0: Pt = [o.x, y1], p1: Pt = [o.x + o.lean, o.top], c: Pt = [o.x + o.lean * 0.2 + (r() - 0.5) * 14, (y1 + o.top) / 2];
+  const len = Math.hypot(p1[0] - p0[0], p1[1] - p0[1]);
+  const ph1 = r() * 6.283, ph2 = r() * 6.283;
+  const off = (t: number) => wob.a1 * Math.sin((t * len / wob.w1) * 6.283 + ph1) + wob.a2 * Math.sin((t * len / wob.w2) * 6.283 + ph2);
+  const pt = (t: number): Pt => {
+    const x = (1 - t) ** 2 * p0[0] + 2 * (1 - t) * t * c[0] + t * t * p1[0];
+    const y = (1 - t) ** 2 * p0[1] + 2 * (1 - t) * t * c[1] + t * t * p1[1];
+    const dx = 2 * (1 - t) * (c[0] - p0[0]) + 2 * t * (p1[0] - c[0]);
+    const dy = 2 * (1 - t) * (c[1] - p0[1]) + 2 * t * (p1[1] - c[1]);
+    const m = Math.hypot(dx, dy) || 1;
+    const k = off(t);
+    return [x + (-dy / m) * k, y + (dx / m) * k];
+  };
+  const n = Math.max(4, Math.ceil(len / wob.step));
+  const body = smooth(Array.from({ length: n + 1 }, (_, i) => pt(i / n)));
+  const f = (v: number) => v.toFixed(1);
   let nodes = '', leaves = '';
   const gap = o.gap ?? 150;
   const count = Math.floor((y1 - o.top) / gap);
   for (let i = 1; i <= count; i++) {
     const t = i / (count + 1) + (r() - 0.5) * 0.04;
-    const [px, py] = at(t);
-    nodes += `M${f(px - o.w * 0.78)} ${f(py + 2)}L${f(px + o.w * 0.78)} ${f(py - 2)}`;
+    const [px, py] = pt(t);
+    nodes += `M${R(px - o.w * 0.78)} ${R(py + 2)}L${R(px + o.w * 0.78)} ${R(py - 2)}`;
     if (o.leaf && i >= count - o.leaf + 1) {
       const side = i % 2 ? 1 : -1;
       for (let k = 0; k < 2; k++) {
@@ -37,18 +81,18 @@ function culm(r: () => number, H: number, o: Opts) {
         const tx = px + Math.cos(a) * L, ty = py + Math.sin(a) * L;
         const mx = (px + tx) / 2, my = (py + ty) / 2;
         const nx = -Math.sin(a), ny = Math.cos(a);
-        leaves += `M${f(px)} ${f(py)}Q${f(mx + nx * L * 0.17)} ${f(my + ny * L * 0.17)} ${f(tx)} ${f(ty)}Q${f(mx - nx * L * 0.09)} ${f(my - ny * L * 0.09)} ${f(px)} ${f(py)}Z`;
+        leaves += `M${R(px)} ${R(py)}Q${R(mx + nx * L * 0.17)} ${R(my + ny * L * 0.17)} ${R(tx)} ${R(ty)}Q${R(mx - nx * L * 0.09)} ${R(my - ny * L * 0.09)} ${R(px)} ${R(py)}Z`;
       }
     }
   }
   return { body, nodes, leaves };
 }
 
-function layer(seed: number, H: number, list: Opts[]) {
+function layer(seed: number, H: number, list: Opts[], wob: Wob) {
   const r = rng(seed);
   const out = { body: '', nodes: '', leaves: '' };
   for (const o of list) {
-    const c = culm(r, H, o);
+    const c = culm(r, H, o, wob);
     out.body += c.body; out.nodes += c.nodes; out.leaves += c.leaves;
   }
   return out;
@@ -56,64 +100,68 @@ function layer(seed: number, H: number, list: Opts[]) {
 
 const W = 1440, H = 900;
 const jitter = rng(41);
-const far = layer(11, H, Array.from({ length: 17 }, (_, i) => ({ x: 20 + i * 88 + jitter() * 40, top: -30 + jitter() * 230, w: 6 + jitter() * 4, lean: (jitter() - 0.5) * 50, gap: 120 + jitter() * 40 })));
-const mid = layer(23, H, Array.from({ length: 10 }, (_, i) => ({ x: 60 + i * 150 + jitter() * 70, top: -30 + jitter() * 150, w: 13 + jitter() * 6, lean: (jitter() - 0.5) * 60, leaf: 3, leafLen: 70, gap: 140 + jitter() * 30 })));
+const far = layer(11, H, Array.from({ length: 17 }, (_, i) => ({ x: 20 + i * 88 + jitter() * 40, top: -30 + jitter() * 230, w: 6 + jitter() * 4, lean: (jitter() - 0.5) * 50, gap: 120 + jitter() * 40 })), { a1: 4.5, w1: 190, a2: 2.4, w2: 84, step: 42 });
+const mid = layer(23, H, Array.from({ length: 10 }, (_, i) => ({ x: 60 + i * 150 + jitter() * 70, top: -30 + jitter() * 150, w: 13 + jitter() * 6, lean: (jitter() - 0.5) * 60, leaf: 3, leafLen: 70, gap: 140 + jitter() * 30 })), { a1: 5, w1: 170, a2: 2.8, w2: 74, step: 38 });
+const NEAR: Wob = { a1: 3.6, w1: 130, a2: 2.2, w2: 56, step: 24 };
 const nearL = layer(5, H, [
   { x: 54, top: -40, w: 40, lean: 16, leaf: 4, leafLen: 150, gap: 160 },
   { x: 150, top: -40, w: 28, lean: -12, leaf: 3, leafLen: 130, gap: 150 },
   { x: 250, top: 120, w: 18, lean: 10, leaf: 2, leafLen: 100, gap: 140 },
-]);
+], NEAR);
 const nearR = layer(9, H, [
   { x: 470, top: -40, w: 38, lean: -18, leaf: 4, leafLen: 150, gap: 165 },
   { x: 370, top: 60, w: 24, lean: 12, leaf: 3, leafLen: 120, gap: 150 },
   { x: 290, top: 240, w: 16, lean: -8, leaf: 2, leafLen: 90, gap: 135 },
-]);
+], NEAR);
+const sun = blob(720, 330, 118, 3);
+const moon = blob(720, 290, 74, 8);
 ---
 <div class="grove" aria-hidden="true">
   <div class="g-deep">
     <div class="g-glow"></div>
     <svg class="g-far" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMax slice" focusable="false">
-      <g filter="url(#ink-wash)" fill="none" stroke-linecap="round">
-        <path d={far.body} class="stk stk-far" />
+      <defs><path id="far-body" d={far.body} /></defs>
+      <g fill="none" stroke-linecap="round">
+        <use href="#far-body" class="halo stk-far" />
+        <use href="#far-body" class="core stk-far" />
         <path d={far.nodes} class="nod stk-far" />
       </g>
     </svg>
-    <svg class="g-sun" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMax slice" focusable="false">
-      <g class="sun-g">
-        <circle class="orb orb-sun" cx="720" cy="330" r="118" filter="url(#ink-rough)" />
-        <circle class="orb orb-moon" cx="720" cy="330" r="74" filter="url(#ink-rough)" />
-      </g>
-    </svg>
-    <svg class="g-mist g-mist-a" viewBox={`0 0 ${W * 2} ${H}`} preserveAspectRatio="none" focusable="false">
-      <g class="mist" filter="url(#ink-mist)">
-        <ellipse cx="500" cy="610" rx="620" ry="46" /><ellipse cx="1500" cy="560" rx="560" ry="40" />
-        <ellipse cx="2300" cy="620" rx="520" ry="46" />
-      </g>
-    </svg>
+    <div class="g-sun">
+      <svg class="orb-d" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMax slice" focusable="false">
+        <g class="sun-g"><path class="orb" d={sun} /></g>
+      </svg>
+      <svg class="orb-n" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMax slice" focusable="false">
+        <g class="sun-g"><path class="orb" d={moon} /></g>
+      </svg>
+    </div>
+    <div class="g-mist g-mist-a"></div>
     <svg class="g-mid" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMax slice" focusable="false">
-      <g filter="url(#ink-wash)" fill="none" stroke-linecap="round">
-        <path d={mid.body} class="stk stk-mid" />
+      <defs><path id="mid-body" d={mid.body} /></defs>
+      <g fill="none" stroke-linecap="round">
+        <use href="#mid-body" class="halo stk-mid" />
+        <use href="#mid-body" class="core stk-mid" />
         <path d={mid.nodes} class="nod stk-mid" />
         <path d={mid.leaves} class="leaf leaf-mid" stroke="none" />
       </g>
     </svg>
-    <svg class="g-mist g-mist-b" viewBox={`0 0 ${W * 2} ${H}`} preserveAspectRatio="none" focusable="false">
-      <g class="mist mist-low" filter="url(#ink-mist)">
-        <ellipse cx="700" cy="770" rx="700" ry="60" /><ellipse cx="1900" cy="740" rx="640" ry="56" />
-      </g>
-    </svg>
+    <div class="g-mist g-mist-b"></div>
   </div>
   <div class="g-front">
     <svg class="g-near g-near-l" viewBox="0 0 520 900" preserveAspectRatio="xMinYMax slice" focusable="false">
-      <g filter="url(#ink-rough)" fill="none" stroke-linecap="round">
-        <path d={nearL.body} class="stk stk-near" />
+      <defs><path id="nl-body" d={nearL.body} /></defs>
+      <g fill="none" stroke-linecap="round">
+        <use href="#nl-body" class="halo stk-near" />
+        <use href="#nl-body" class="core stk-near" />
         <path d={nearL.nodes} class="nod stk-near" />
         <path d={nearL.leaves} class="leaf leaf-near" stroke="none" />
       </g>
     </svg>
     <svg class="g-near g-near-r" viewBox="0 0 520 900" preserveAspectRatio="xMaxYMax slice" focusable="false">
-      <g filter="url(#ink-rough)" fill="none" stroke-linecap="round">
-        <path d={nearR.body} class="stk stk-near" />
+      <defs><path id="nr-body" d={nearR.body} /></defs>
+      <g fill="none" stroke-linecap="round">
+        <use href="#nr-body" class="halo stk-near" />
+        <use href="#nr-body" class="core stk-near" />
         <path d={nearR.nodes} class="nod stk-near" />
         <path d={nearR.leaves} class="leaf leaf-near" stroke="none" />
       </g>

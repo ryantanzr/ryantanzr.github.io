@@ -109,15 +109,15 @@ components:
 
 The site is a view into a grove: three depths of ink-wash bamboo, mist bands drifting between them, a low gold sun behind the stalks. Everything else is drawn in the same hand. Surfaces are mist-green washi with a faint fibre texture; text is bark-brown sumi; gold is light, never ink on light. The dark theme is the same grove before sunrise: forest-black ground, a pale gold moon, slow fireflies.
 
-It is calm and sparse. There are no cards and no boxes: structure is carried by hairline rules warmed with gold, by the bamboo culm of the journey, and by whitespace (7rem between sections). Display type is a Japanese-inflected serif, body is a plain humanist sans, and every drawn mark passes through an ink-wash filter so edges feel brushed, not vector-clean. Reading pages (posts, resume) drop the scenery and keep only the palette, type and rules, on a 42-46rem column.
+It is calm and sparse. There are no cards and no boxes: structure is carried by hairline rules warmed with gold, by the bamboo culm of the journey, and by whitespace (7rem between sections). Display type is a Japanese-inflected serif, body is a plain humanist sans, and every drawn mark has a brushed, not vector-clean, edge (small marks through an SVG ink filter, the big grove through hand-wobbled geometry). Reading pages (posts, resume) drop the scenery and keep only the palette, type and rules, on a 42-46rem column.
 
 Religious-adjacent motifs (lotus, ensō, bodhi leaf, mala) appear only as small authored marks: seals, dividers, the theme toggle, the footer strand, the contact pond. They are never wallpaper, and no figures or wheel-type symbols are used.
 
 **Key Characteristics:**
-- Mist-green washi ground with a multiply-blended fibre noise (opacity 0.22 light, 0.05 dark).
+- Mist-green washi ground with a plain translucent fibre-noise tile (`--grain` 0.16 light, 0.03 dark; no blend mode, so scrolling never re-blends the page).
 - Gold for light, seals, rules and focus; a separate darker gold-ink for anything that must read as text on light.
 - Shippori Mincho 500 for names and headings, Lato 400/700 for everything else.
-- SVG ink filters on every drawn form; flat tonal depth, one shadow-free surface language.
+- SVG ink filters on small drawn forms only (seals, ensō, dividers); the grove is filter-free vector with baked wobble; flat tonal depth, one shadow-free surface language.
 - Slow, damped, optional motion: nothing moves faster than 0.5s, the scene breathes over 15-120s.
 
 ## Colors
@@ -182,12 +182,12 @@ There are no box shadows. Depth is atmospheric: three scene layers (far at 0.3 o
 
 ## Shapes
 
-Soft and organic. Pills (999px) for buttons, chips, badges and the theme toggle; 8px for code blocks, callouts and TOC; 6px for hover rows, images and details; 4px for kbd and inline code. Seals are 5px-radius squares with an inset 2px-radius hairline, edges roughened by the ink filter. Every drawn mark uses one of four SVG filters: `ink-rough-sm` (seals, ensō), `ink-dry` (brush dividers), `ink-wash` (distant bamboo), `ink-mist` (blur 22 for bands).
+Soft and organic. Pills (999px) for buttons, chips, badges and the theme toggle; 8px for code blocks, callouts and TOC; 6px for hover rows, images and details; 4px for kbd and inline code. Seals are 5px-radius squares with an inset 2px-radius hairline, edges roughened by the ink filter. Small drawn marks use one of two SVG filters: `ink-rough-sm` (seals, ensō) and `ink-dry` (brush dividers). The grove uses none: stalks are Catmull-Rom curves wobbled by seeded sines, each drawn twice from one path (a faint wide pass for ink bleed, then the stroke), and mist bands are radial gradients.
 
 ## Components
 
 ### Hero grove
-A decorative, aria-hidden SVG scene: far/mid/near stalks with nodes, two disc orbs (`.orb-sun`, `.orb-moon`) toggled by `--sun-show` and `--moon-show`, a CSS radial-gradient glow div (`.g-glow`, not an SVG halo; light glow at 37% height, night at 31% with the moon lifted 40px), two near mist bands at 200% width, and near stalks whose top and inside edges fade by mask. Ink-wash and sun layers are SVG vector; no raster assets ship. Copy sits over a radial scrim in ground colour. Name, then ensō and location line (wraps within a 17rem span on mobile), lede, two buttons.
+A decorative, aria-hidden SVG scene: far/mid/near stalks with nodes, two brushed-edge disc orbs, each in its own svg layer (`.orb-d` sun, `.orb-n` moon) driven by `--sun-o/--sun-y/--moon-o/--moon-y` so the sun can sink and the moon rise, a CSS radial-gradient glow div (`.g-glow`, not an SVG halo; 37% height, lifting 3rem at night), two mist bands at 200% width drawn as gradient divs, and near stalks whose top and inside edges fade by mask. All scene layers are filter-free SVG or CSS gradient; no raster assets ship. Copy sits over a radial scrim in ground colour. Name, then ensō and location line (wraps within a 17rem span on mobile), lede, two buttons.
 
 ### Ensō seal
 An open brush circle (stroke gold, 3.2) holding the lotus, 44-52px, used once beside the location line.
@@ -205,7 +205,7 @@ Centred clearing: a 15rem lotus with three slow ripple ellipses, headline, one s
 A 27-bead sagging strand (brown at 0.55 opacity, one gold guru bead at the centre) with a lotus tassel, 44rem max, above a muted footer line.
 
 ### Lotus theme toggle
-40px outlined pill holding a lotus. Open by day; at night the outer petals rotate 34deg and mid petals 20deg to close it. Hover washes gold.
+40px outlined pill holding a lotus. Open by day; pressed, the outer petals rotate 34deg and mid petals 20deg to close it, outer first (0s), mid (0.18s), heart (0.36s) over 1.7s, and reopen in reverse order. A thin gold ring spreads once from the button (1.8s, scale 1 to 2.4, like a pond ripple). Hover washes gold.
 
 ### Buttons
 Pills with 1px bark-brown outline, 0.65x1.35rem, 0.04em tracking. Primary is bamboo green with on-bamboo text, turning dawn gold with dark ink on hover; secondary hovers to gold wash and gold-ink border. Press nudges 1px.
@@ -226,21 +226,22 @@ Code Wash ground, hairline border, 8px radius, 0.88rem/1.55; language tag top-le
 
 ## Motion
 
-Grammar: slow ease-out (`cubic-bezier(0.16, 1, 0.3, 1)`), damped, ambient.
+Grammar: slow ease-out (`cubic-bezier(0.16, 1, 0.3, 1)`), damped, ambient; the theme dusk uses ease-in-out (`--dusk`) so the sky changes at the pace of light, not a pop.
 - Entrance: stalks rise over 2.6-2.8s staggered 0.2-0.5s, the sun settles over 4.2s, the glow fades in over 5s, hero copy settles (blur 4px to 0) over 1.9s with 0.15s steps.
 - Mist drifts 34% sideways over 90s and 120s, alternating.
 - Near stalks sway between -0.45 and 0.45 degrees over 15s and 19s, always under 0.5deg.
 - Scroll parallax lags deep and front layers 2.5rem and 5rem across the first 90svh, only inside `@supports (animation-timeline: scroll())`.
 - Gold light lingers on hovered rows (0.7s in, 1.6s out); links and buttons transition 0.5-0.8s.
-- Theme change cross-fades through View Transitions in 1.1s while the lotus petals rotate over 1.4s.
+- Theme change is a slow dusk, not a snapshot cross-fade: every colour token is a registered `@property` tweened on `:root` with the dusk ease (`cubic-bezier(0.4, 0, 0.2, 1)`). Ground and scene tokens take 1.7s; text tokens wait 0.6s and take 0.5s so lettering crosses the darkening ground quickly. The sun sinks and fades over 1.7s while the moon rises over 2s (0.2s later); the glow lifts 3rem; fireflies fade in over 1.7s; the lotus closes and a ring ripples from it. Element-level colour transitions stand down while it runs (`:root[data-tween]`). It is interruptible: CSS retargets from the current value.
 - Ambient motes (day) and fireflies (night) on a canvas, 8-18 particles, only where `.hero` exists (home page), skipped for data saver and weak devices.
-- Under `prefers-reduced-motion: reduce` all of it is off: no entrance, mist, sway, parallax, ripples, particles, view transitions, or petal transition.
+- Endless loops (sway, mist drift) pause when the hero is off screen (`scripts/scene.ts`); the canvas stops too.
+- Under `prefers-reduced-motion: reduce` the ambient and spatial motion is off: no entrance, mist, sway, parallax, ripples, particles or petal rotation. The theme change keeps its meaning: colours tween over 0.6s (text 0.25s after 0.2s), the sun and moon swap by opacity only with nothing travelling, and the glow stays put.
 
 ## Do's and Don'ts
 
 ### Do:
 - **Do** use gold-ink (#7a5710) for any gold that must be read as text on the light ground.
-- **Do** run every new drawn form through an existing ink filter (`ink-rough-sm`, `ink-dry`, `ink-wash`) and draw it in palette colours via CSS variables so dark mode follows.
+- **Do** run every new small drawn form through an existing ink filter (`ink-rough-sm`, `ink-dry`) and draw it in palette colours via CSS variables so dark mode follows. Never put an SVG filter (turbulence, displacement, blur) on a large area: it re-rasterises on the CPU (about 0.4s each for the far and mid grove) on every paint and theme change; bake the wobble into the path geometry or use a gradient instead.
 - **Do** keep lotus, ensō, bodhi leaf and mala beads as seals, dividers, the toggle, list markers and the footer strand.
 - **Do** keep durations at or above 0.5s with the grove ease, and wrap any new motion in `prefers-reduced-motion: no-preference`.
 - **Do** separate with hairlines (1px, gold mixed 45-55% into Reed Line) and whitespace, not boxes.

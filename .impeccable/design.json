@@ -324,12 +324,12 @@
   ],
   "narrative": {
     "northStar": "The Bamboo Grove at Dawn",
-    "overview": "The site is a view into a grove: three depths of ink-wash bamboo, mist bands drifting between them, a low gold sun behind the stalks. Everything else is drawn in the same hand. Surfaces are mist-green washi with a faint fibre texture; text is bark-brown sumi; gold is light, never ink on light. The dark theme is the same grove before sunrise: forest-black ground, a pale gold moon, slow fireflies.\n\nIt is calm and sparse. There are no cards and no boxes: structure is carried by hairline rules warmed with gold, by the bamboo culm of the journey, and by whitespace (7rem between sections). Display type is a Japanese-inflected serif, body is a plain humanist sans, and every drawn mark passes through an ink-wash filter so edges feel brushed, not vector-clean. Reading pages (posts, resume) drop the scenery and keep only the palette, type and rules, on a 42-46rem column.\n\nReligious-adjacent motifs (lotus, ensō, bodhi leaf, mala) appear only as small authored marks: seals, dividers, the theme toggle, the footer strand, the contact pond. They are never wallpaper, and no figures or wheel-type symbols are used.",
+    "overview": "The site is a view into a grove: three depths of ink-wash bamboo, mist bands drifting between them, a low gold sun behind the stalks. Everything else is drawn in the same hand. Surfaces are mist-green washi with a faint fibre texture; text is bark-brown sumi; gold is light, never ink on light. The dark theme is the same grove before sunrise: forest-black ground, a pale gold moon, slow fireflies.\n\nIt is calm and sparse. There are no cards and no boxes: structure is carried by hairline rules warmed with gold, by the bamboo culm of the journey, and by whitespace (7rem between sections). Display type is a Japanese-inflected serif, body is a plain humanist sans, and every drawn mark has a brushed, not vector-clean, edge (small marks through an SVG ink filter, the big grove through hand-wobbled geometry). Reading pages (posts, resume) drop the scenery and keep only the palette, type and rules, on a 42-46rem column.\n\nReligious-adjacent motifs (lotus, ensō, bodhi leaf, mala) appear only as small authored marks: seals, dividers, the theme toggle, the footer strand, the contact pond. They are never wallpaper, and no figures or wheel-type symbols are used.",
     "keyCharacteristics": [
-      "Mist-green washi ground with a multiply-blended fibre noise (opacity 0.22 light, 0.05 dark).",
+      "Mist-green washi ground with a plain translucent fibre-noise tile (`--grain` 0.16 light, 0.03 dark; no blend mode, so scrolling never re-blends the page).",
       "Gold for light, seals, rules and focus; a separate darker gold-ink for anything that must read as text on light.",
       "Shippori Mincho 500 for names and headings, Lato 400/700 for everything else.",
-      "SVG ink filters on every drawn form; flat tonal depth, one shadow-free surface language.",
+      "SVG ink filters on small drawn forms only (seals, ensō, dividers); the grove is filter-free vector with baked wobble; flat tonal depth, one shadow-free surface language.",
       "Slow, damped, optional motion: nothing moves faster than 0.5s, the scene breathes over 15-120s."
     ],
     "rules": [
@@ -356,7 +356,7 @@
     ],
     "dos": [
       "**Do** use gold-ink (#7a5710) for any gold that must be read as text on the light ground.",
-      "**Do** run every new drawn form through an existing ink filter (`ink-rough-sm`, `ink-dry`, `ink-wash`) and draw it in palette colours via CSS variables so dark mode follows.",
+      "**Do** run every new small drawn form through an existing ink filter (`ink-rough-sm`, `ink-dry`) and draw it in palette colours via CSS variables so dark mode follows. Never put an SVG filter (turbulence, displacement, blur) on a large area: it re-rasterises on the CPU (about 0.4s each for the far and mid grove) on every paint and theme change; bake the wobble into the path geometry or use a gradient instead.",
       "**Do** keep lotus, ensō, bodhi leaf and mala beads as seals, dividers, the toggle, list markers and the footer strand.",
       "**Do** keep durations at or above 0.5s with the grove ease, and wrap any new motion in `prefers-reduced-motion: no-preference`.",
       "**Do** separate with hairlines (1px, gold mixed 45-55% into Reed Line) and whitespace, not boxes."

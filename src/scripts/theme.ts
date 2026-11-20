@@ -1,9 +1,10 @@
-// Theme toggle: the page cross-fades slowly (View Transitions) while the lotus opens or closes.
+// Theme toggle. Flipping data-theme is all that is needed: every colour token is registered in CSS and
+// tweens slowly (a dusk, not a switch), the sun sets and the moon rises, and the lotus closes or opens.
+// This script adds the one thing CSS cannot: a ripple that spreads from the lotus on each press.
 const root = document.documentElement;
 const btn = document.getElementById('theme') as HTMLButtonElement | null;
-const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-let busy = false;
 
+let tweenTimer = 0;
 const current = () => (root.dataset.theme === 'dark' ? 'dark' : 'light');
 
 function apply(theme: 'dark' | 'light') {
@@ -15,12 +16,15 @@ function apply(theme: 'dark' | 'light') {
 
 if (btn) {
   apply(current()); // sync the label with the theme chosen in <head>
+  btn.addEventListener('animationend', () => btn.classList.remove('ripple'));
   btn.addEventListener('click', () => {
-    if (busy) return;
-    const next = current() === 'dark' ? 'light' : 'dark';
-    const start = (document as any).startViewTransition?.bind(document);
-    if (reduce || !start) { apply(next); return; }
-    busy = true;
-    start(() => apply(next)).finished.finally(() => { busy = false; });
+    // while the colour tokens tween, element-level colour transitions stand down (they would restart every frame)
+    root.dataset.tween = '';
+    clearTimeout(tweenTimer);
+    tweenTimer = window.setTimeout(() => delete root.dataset.tween, 2000);
+    apply(current() === 'dark' ? 'light' : 'dark'); // always responds, even mid-tween: CSS retargets from where it is
+    btn.classList.remove('ripple');
+    void btn.offsetWidth; // restart the ripple if it is still spreading
+    btn.classList.add('ripple');
   });
 }
