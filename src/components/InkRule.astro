@@ -1,6 +1,8 @@
 ---
-// A single brush-stroke divider.
+// A brush-stroke divider with a small lotus at its centre.
 ---
-<svg class="ink-rule" viewBox="0 0 600 24" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-  <path filter="url(#ink-dry)" fill="var(--ink)" d="M0 14C60 6 140 4 240 8c90 4 170 0 250-4 50-2 90 0 110 4-30 8-90 14-170 15C340 24 120 22 0 14z" />
+<svg class="ink-rule" viewBox="0 0 600 34" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false">
+  <path filter="url(#ink-dry)" class="rule-ink" d="M2 20C50 14 110 12 180 15c40 2 70 1 96 0-4 3-30 5-80 6C130 22 60 24 2 20z" />
+  <path filter="url(#ink-dry)" class="rule-ink" d="M598 20c-48-6-108-8-178-5-40 2-70 1-96 0 4 3 30 5 80 6 66 1 136 3 194-1z" />
+  <use class="rule-lotus" href="#lotus" x="276" y="6" width="48" height="32" />
 </svg>

@@ -1,0 +1,4 @@
+Shippori Mincho (Latin subset, weight 500)
+Copyright 2020 The Shippori Mincho Project Authors (https://github.com/fontdasu/ShipporiMincho)
+Licensed under the SIL Open Font License, Version 1.1: https://openfontlicense.org
+Self-hosted from files published by Google Fonts (https://fonts.google.com/specimen/Shippori+Mincho).

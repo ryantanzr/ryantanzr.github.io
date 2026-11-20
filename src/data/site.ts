@@ -76,9 +76,9 @@ export const skills = [
 // Small timeline on the home page. `mark` is the monogram shown on the seal;
 // swap Seal for an <img> if you'd rather use real logos.
 export const journey = [
-  { mark: 'NU', tone: 'indigo', name: 'NUS', role: 'Computer Science', period: 'Aug 2023', note: 'Micro-services, formal methods, databases, testing.' },
-  { mark: 'AC', tone: 'ink', name: 'Accenture', role: 'Application developer intern', period: 'May 2024', note: 'Glue pipelines moving 700 tables into Redshift.' },
-  { mark: 'AT', tone: 'red', name: 'Assistive Technologies', role: 'Founding engineer', period: 'Jun 2025', note: 'Serverless messaging and insights for 50 families.' },
-  { mark: 'H', tone: 'ink', name: 'Hult Prize', role: 'Founder-in-residence', period: '2026', note: 'Top 60 of 18,000 applicants worldwide.' },
-  { mark: 'K', tone: 'red', name: 'Kredivo', role: 'Engineering intern', period: 'Jun 2026 · now', note: 'Go payment services across four regions.' },
+  { mark: 'NU', tone: 'green', name: 'NUS', role: 'Computer Science', period: 'Aug 2023', note: 'Micro-services, formal methods, databases, testing.' },
+  { mark: 'AC', tone: 'brown', name: 'Accenture', role: 'Application developer intern', period: 'May 2024', note: 'Glue pipelines moving 700 tables into Redshift.' },
+  { mark: 'AT', tone: 'gold', name: 'Assistive Technologies', role: 'Founding engineer', period: 'Jun 2025', note: 'Serverless messaging and insights for 50 families.' },
+  { mark: 'H', tone: 'brown', name: 'Hult Prize', role: 'Founder-in-residence', period: '2026', note: 'Top 60 of 18,000 applicants worldwide.' },
+  { mark: 'K', tone: 'gold', name: 'Kredivo', role: 'Engineering intern', period: 'Jun 2026 · now', note: 'Go payment services across four regions.' },
 ] as const;

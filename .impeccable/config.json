@@ -1,0 +1,14 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "overused-font",
+        "value": "lato",
+        "createdAt": "2026-11-19T23:59:35.121Z",
+        "reason": "user confirmed: keep Lato"
+      }
+    ]
+  }
+}

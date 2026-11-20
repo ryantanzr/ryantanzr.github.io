@@ -50,7 +50,7 @@ npm run new-post -- "My idea" --tags go,idempotency
 
 ## Quotes, lists and tables
 
-> A plain quote looks like this, set in the serif italic.
+> A plain quote looks like this, set in the display serif.
 
 1. Ordered lists
 2. keep their numbers

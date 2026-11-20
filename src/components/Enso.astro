@@ -1,0 +1,9 @@
+---
+// An ensō (open brush circle) holding a gold lotus: the site's seal.
+interface Props { size?: number }
+const { size = 52 } = Astro.props;
+---
+<svg class="enso" width={size} height={size} viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+  <path class="enso-ring" filter="url(#ink-rough-sm)" d="M44.5 11.5C38 6.5 28 6 20.5 11 11 17 8 29 13 39c5 10 17 15 27 11 8-3 13-10 13.5-18" fill="none" />
+  <use class="enso-lotus" href="#lotus" x="14" y="21" width="36" height="24" />
+</svg>

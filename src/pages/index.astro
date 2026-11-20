@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
-import InkHero from '../components/InkHero.astro';
+import Grove from '../components/Grove.astro';
+import Enso from '../components/Enso.astro';
 import Journey from '../components/Journey.astro';
 import PostList from '../components/PostList.astro';
 import { site, projects } from '../data/site';
@@ -8,64 +9,77 @@ import { getPublishedPosts } from '../lib/posts';
 
 const posts = (await getPublishedPosts()).slice(0, 3);
 ---
-<Base description={site.tagline}>
+<Base description={site.tagline} bleed>
   <section class="hero">
-    <div class="hero-copy">
-      <h1>{site.fullName}</h1>
-      <p class="where">Software engineer · Singapore</p>
-      <p class="lede">{site.tagline}</p>
-      <div class="btns">
-        <a class="btn primary" href="/blog/">Read the blog</a>
-        <a class="btn" href="#contact">Get in touch</a>
+    <Grove />
+    <div class="wrap wide hero-inner">
+      <div class="hero-copy">
+        <h1>{site.fullName}</h1>
+        <p class="where"><Enso size={44} /><span>Software engineer · Singapore</span></p>
+        <p class="lede">{site.tagline}</p>
+        <div class="btns">
+          <a class="btn primary" href="/blog/">Read the blog</a>
+          <a class="btn" href="#contact">Get in touch</a>
+        </div>
       </div>
     </div>
-    <div class="hero-art"><InkHero /></div>
   </section>
 
-  <section class="section" id="about">
-    <div class="statement">
+  <div class="wrap wide">
+    <section class="section about" id="about">
       <p class="pull">I like software that is quiet: the queues, ledgers and pipelines nobody notices until they fail.</p>
-      <p>
-        I'm Ryan, a computer science student at NUS. I spend most of my time on the unglamorous middle of a system,
-        where messages arrive twice, late or out of order, and the job is to make that not matter.
-      </p>
-      <p>
-        I care most about software that quietly does its job for real people, whether that's a family using a
-        messaging app or a merchant waiting on a payout, and I'm happiest when the interesting failures are the ones
-        nobody has to notice.
-      </p>
-      <p>This site is where I think out loud: notes on idempotency, observability, serverless, and whatever I learn the hard way.</p>
-    </div>
-  </section>
-
-  <section class="section" id="journey">
-    <h2>The path so far</h2>
-    <Journey />
-  </section>
-
-  <section class="section" id="work">
-    <h2>Things I've made</h2>
-    <ul class="work">
-      {projects.map((p) => (
-        <li>
-          <h3><a class="ext" href={p.href} rel="noopener noreferrer">{p.name}</a></h3>
-          <span class="stack">{p.stack.join(' · ')}</span>
-          <p>{p.summary}</p>
-        </li>
-      ))}
-    </ul>
-  </section>
-
-  {posts.length > 0 && (
-    <section class="section" id="writing">
-      <div class="section-head"><h2>Latest writing</h2><a href="/blog/">All posts →</a></div>
-      <PostList posts={posts} />
+      <div class="about-body">
+        <p>
+          I'm Ryan, a computer science student at NUS. I spend most of my time on the unglamorous middle of a system,
+          where messages arrive twice, late or out of order, and the job is to make that not matter.
+        </p>
+        <p>
+          I care most about software that quietly does its job for real people, whether that's a family using a
+          messaging app or a merchant waiting on a payout, and I'm happiest when the interesting failures are the ones
+          nobody has to notice.
+        </p>
+        <p>This site is where I think out loud: notes on idempotency, observability, serverless, and whatever I learn the hard way.</p>
+      </div>
     </section>
-  )}
 
-  <section class="section hello" id="contact">
-    <h2>Say hello</h2>
-    <p>Happy to talk about backend systems, assistive tech, or whatever you're building.</p>
-    <a class="btn primary" href={`mailto:${site.email}`}>Email me</a>
-  </section>
+    <section class="section split" id="journey">
+      <div class="split-head">
+        <h2>The path so far</h2>
+        <p class="muted">One node for each place I've grown.</p>
+      </div>
+      <Journey />
+    </section>
+
+    <section class="section" id="work">
+      <h2>Things I've made</h2>
+      <ul class="work">
+        {projects.map((p) => (
+          <li>
+            <h3><a class="ext" href={p.href} rel="noopener noreferrer">{p.name}</a></h3>
+            <span class="stack">{p.stack.join(' · ')}</span>
+            <p>{p.summary}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="section" id="writing">
+      <div class="section-head"><h2>Latest writing</h2><a class="more" href="/blog/">All posts</a></div>
+      {posts.length > 0
+        ? <PostList posts={posts} />
+        : <p class="muted m0">Nothing published yet. New writing will land here and in the <a href="/rss.xml">RSS feed</a>.</p>}
+    </section>
+
+    <section class="section hello" id="contact">
+      <svg class="pond" viewBox="0 0 240 90" aria-hidden="true" focusable="false">
+        <ellipse class="ripple r1" cx="120" cy="66" rx="30" ry="6" />
+        <ellipse class="ripple r2" cx="120" cy="66" rx="30" ry="6" />
+        <ellipse class="ripple r3" cx="120" cy="66" rx="30" ry="6" />
+        <use class="pond-lotus" href="#lotus" x="88" y="22" width="64" height="43" />
+      </svg>
+      <h2>Say hello</h2>
+      <p>Happy to talk about backend systems, assistive tech, or whatever you're building.</p>
+      <a class="btn primary" href={`mailto:${site.email}`}>Email me</a>
+    </section>
+  </div>
 </Base>

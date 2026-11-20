@@ -1,0 +1,373 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-20T00:06:09Z",
+  "title": "Design System: Ryan Tan, The Bamboo Grove at Dawn",
+  "extensions": {
+    "colorMeta": {
+      "bamboo-green": {
+        "role": "primary",
+        "displayName": "Bamboo Green",
+        "canonical": "#3f5b29",
+        "tonalRamp": [
+          "#252f1e",
+          "#3d5828",
+          "#557b37",
+          "#6e9e47",
+          "#8fbc6b",
+          "#afcf96",
+          "#cfe2c0",
+          "#edf1e9"
+        ]
+      },
+      "bamboo-soft": {
+        "role": "primary",
+        "displayName": "Soft Bamboo",
+        "canonical": "#7a9a58",
+        "tonalRamp": [
+          "#262d20",
+          "#40512e",
+          "#5a7241",
+          "#749253",
+          "#95b177",
+          "#b3c79e",
+          "#d1dec5",
+          "#edf0ea"
+        ]
+      },
+      "dawn-gold": {
+        "role": "secondary",
+        "displayName": "Dawn Gold",
+        "canonical": "#bd9230",
+        "tonalRamp": [
+          "#342c19",
+          "#664f1a",
+          "#8e6e24",
+          "#b78d2e",
+          "#d4ad54",
+          "#e0c485",
+          "#ecdcb6",
+          "#f4f0e7"
+        ]
+      },
+      "gold-ink": {
+        "role": "secondary",
+        "displayName": "Gold Ink",
+        "canonical": "#7a5710",
+        "tonalRamp": [
+          "#382c15",
+          "#71500f",
+          "#9e7115",
+          "#cb911b",
+          "#e6b042",
+          "#edc678",
+          "#f4ddae",
+          "#f5f0e5"
+        ]
+      },
+      "gold-wash": {
+        "role": "secondary",
+        "displayName": "Gold Wash",
+        "canonical": "#e6d49a",
+        "tonalRamp": [
+          "#342e18",
+          "#665419",
+          "#8f7623",
+          "#b8972e",
+          "#d4b653",
+          "#e1cb84",
+          "#ede0b5",
+          "#f4f1e7"
+        ]
+      },
+      "bark-brown": {
+        "role": "tertiary",
+        "displayName": "Bark Brown",
+        "canonical": "#5a3d28",
+        "tonalRamp": [
+          "#2f251d",
+          "#583c27",
+          "#7c5437",
+          "#9f6c47",
+          "#bd8d6b",
+          "#d0ae95",
+          "#e3cebf",
+          "#f1ece9"
+        ]
+      },
+      "mist-washi": {
+        "role": "neutral",
+        "displayName": "Mist Washi",
+        "canonical": "#e8ead3",
+        "tonalRamp": [
+          "#2d2e1e",
+          "#525629",
+          "#73793a",
+          "#949b4a",
+          "#b3ba6e",
+          "#c9ce97",
+          "#dfe1c1",
+          "#f0f1e9"
+        ]
+      },
+      "bark-ink": {
+        "role": "neutral",
+        "displayName": "Bark Ink",
+        "canonical": "#1f1a10",
+        "tonalRamp": [
+          "#2e291f",
+          "#54472b",
+          "#76633d",
+          "#977f4e",
+          "#b69f72",
+          "#cbbb9a",
+          "#e0d6c2",
+          "#f1eeea"
+        ]
+      },
+      "muted-bark": {
+        "role": "neutral",
+        "displayName": "Muted Bark",
+        "canonical": "#58543b",
+        "tonalRamp": [
+          "#2b2a22",
+          "#4c4933",
+          "#6b6648",
+          "#89835c",
+          "#a9a37f",
+          "#c2bda3",
+          "#dad8c8",
+          "#efefeb"
+        ]
+      },
+      "forest-black": {
+        "role": "neutral",
+        "displayName": "Forest Black (night ground)",
+        "canonical": "#141a0f",
+        "tonalRamp": [
+          "#262c20",
+          "#3e512f",
+          "#577141",
+          "#709254",
+          "#91b177",
+          "#b1c79e",
+          "#d0ddc5",
+          "#edf0ea"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Shippori Mincho 500: names, hero h1, post titles."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section h2 and the about pull-quote."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Journey, work, job and post-list titles."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Lato 400/700 at 1.0625rem, 1.7 leading."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Small tracked uppercase for chips, periods, badges, callout titles."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "ease-grove",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Single easing for entrances, hovers and the theme change."
+      },
+      {
+        "name": "entrance",
+        "value": "rise 2.6-2.8s staggered 0.2-0.5s; sun 4.2s; glow 5s; copy settle 1.9s",
+        "purpose": "Slow stalks-in-the-mist arrival."
+      },
+      {
+        "name": "mist-drift",
+        "value": "translateX 0 to -34%, 90s and 120s, alternate",
+        "purpose": "Ambient mist bands."
+      },
+      {
+        "name": "sway",
+        "value": "rotate -0.45deg to 0.45deg, 15s and 19s, ease-in-out alternate",
+        "purpose": "Near stalks, always under 0.5deg."
+      },
+      {
+        "name": "parallax",
+        "value": "animation-timeline: scroll(root block), range 0-90svh, lag 2.5rem and 5rem",
+        "purpose": "Deep and front layers; guarded by @supports."
+      },
+      {
+        "name": "gold-linger",
+        "value": "background 0.7s in, 1.6s out",
+        "purpose": "Hovered post rows."
+      },
+      {
+        "name": "theme-cross-fade",
+        "value": "view-transition 1.1s; petals 1.4s",
+        "purpose": "Day/night change."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "all of the above off under prefers-reduced-motion: reduce",
+        "purpose": "Accessibility."
+      },
+      {
+        "name": "sun-offset",
+        "value": "--sun-dx 250px, --glow-x 68% from 48rem; moon --sun-dy -40px, --glow-y 31%",
+        "purpose": "Sun or moon right of centre on desktop."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "phone",
+        "value": "30rem"
+      },
+      {
+        "name": "narrow",
+        "value": "34rem"
+      },
+      {
+        "name": "tablet",
+        "value": "46rem"
+      },
+      {
+        "name": "hero-split",
+        "value": "48rem"
+      },
+      {
+        "name": "two-column",
+        "value": "62rem"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Bamboo-green pill; warms to dawn gold on hover.",
+      "html": "<a class=\"ds-btn-primary\" href=\"#\">Read the blog</a>",
+      "css": ".ds-btn-primary{display:inline-block;padding:.65rem 1.35rem;font-size:.95rem;letter-spacing:.04em;border:1px solid var(--accent);border-radius:999px;text-decoration:none;background:var(--accent);color:var(--on-accent);transition:color .5s cubic-bezier(0.16, 1, 0.3, 1),background-color .7s cubic-bezier(0.16, 1, 0.3, 1),border-color .5s cubic-bezier(0.16, 1, 0.3, 1),transform .5s cubic-bezier(0.16, 1, 0.3, 1)}.ds-btn-primary:hover{background:var(--gold);border-color:var(--gold);color:#1f1a10}.ds-btn-primary:focus-visible{outline:2px solid var(--gold-ink);outline-offset:3px}.ds-btn-primary:active{transform:translateY(1px)}"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Bark-brown outlined pill that washes gold on hover.",
+      "html": "<a class=\"ds-btn-secondary\" href=\"#\">Get in touch</a>",
+      "css": ".ds-btn-secondary{display:inline-block;padding:.65rem 1.35rem;font-size:.95rem;letter-spacing:.04em;border:1px solid var(--brown);border-radius:999px;text-decoration:none;background:transparent;color:var(--text);transition:background-color .7s cubic-bezier(0.16, 1, 0.3, 1),border-color .5s cubic-bezier(0.16, 1, 0.3, 1)}.ds-btn-secondary:hover{border-color:var(--gold-ink);background:var(--gold-wash)}.ds-btn-secondary:focus-visible{outline:2px solid var(--gold-ink);outline-offset:3px}"
+    },
+    {
+      "name": "Nav Link",
+      "kind": "nav",
+      "refersTo": "",
+      "description": "Muted link that draws a gold underline.",
+      "html": "<nav class=\"ds-nav\"><a href=\"#\">Blog</a><a href=\"#\" aria-current=\"page\">Resume</a></nav>",
+      "css": ".ds-nav{display:flex;gap:1.5rem;font-size:.95rem}.ds-nav a{text-decoration:none;color:var(--muted);letter-spacing:.03em;padding:.35rem 0;background:linear-gradient(var(--gold),var(--gold)) left bottom/0 1px no-repeat;transition:color .5s cubic-bezier(0.16, 1, 0.3, 1),background-size .8s cubic-bezier(0.16, 1, 0.3, 1)}.ds-nav a:hover,.ds-nav a[aria-current=page]{color:var(--text);background-size:100% 1px}.ds-nav a:focus-visible{outline:2px solid var(--gold-ink);outline-offset:3px}"
+    },
+    {
+      "name": "Chip",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Uppercase tag pill with gold hover wash.",
+      "html": "<a class=\"ds-chip\" href=\"#\">Idempotency</a>",
+      "css": ".ds-chip{font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;padding:.15rem .7rem;border:1px solid var(--line);border-radius:999px;color:var(--green);text-decoration:none;transition:color .5s cubic-bezier(0.16, 1, 0.3, 1),border-color .5s cubic-bezier(0.16, 1, 0.3, 1),background-color .7s cubic-bezier(0.16, 1, 0.3, 1)}.ds-chip:hover{border-color:var(--gold);color:var(--text);background:var(--gold-wash)}.ds-chip:focus-visible{outline:2px solid var(--gold-ink);outline-offset:3px}"
+    },
+    {
+      "name": "Post Row",
+      "kind": "custom",
+      "refersTo": "",
+      "description": "Hairline row that warms with gold light on hover and cools slowly.",
+      "html": "<div class=\"ds-row\"><a class=\"ds-title\" href=\"#\">Making retries safe</a><p>Notes on idempotency keys.</p><span class=\"ds-meta\">12 Mar 2026 · 6 min</span></div>",
+      "css": ".ds-row{padding:1.35rem .9rem;border-top:1px solid color-mix(in srgb,var(--gold) 45%,var(--line));border-radius:6px;background:transparent;transition:background-color 1.6s cubic-bezier(0.16, 1, 0.3, 1)}.ds-row:hover,.ds-row:focus-within{background:color-mix(in srgb,var(--gold) 13%,transparent);transition-duration:.7s}.ds-title{font-family:var(--font-display);font-size:1.8rem;line-height:1.2;text-decoration:none}.ds-row p{margin:.3rem 0 .7rem;color:var(--muted)}.ds-meta{font-size:.82rem;letter-spacing:.06em;color:var(--muted)}.ds-title:focus-visible{outline:2px solid var(--gold-ink);outline-offset:3px}"
+    },
+    {
+      "name": "Hanko Seal",
+      "kind": "custom",
+      "refersTo": "seal-bamboo",
+      "description": "Monogram stamp with roughened edge, one per journey place.",
+      "html": "<svg class=\"ds-seal\" width=\"56\" height=\"56\" viewBox=\"0 0 56 56\"><rect x=\"3\" y=\"3\" width=\"50\" height=\"50\" rx=\"5\" fill=\"var(--green)\"/><rect x=\"7.5\" y=\"7.5\" width=\"41\" height=\"41\" rx=\"2\" fill=\"none\" stroke=\"var(--on-accent)\" stroke-width=\"1\" opacity=\".45\"/><text x=\"28\" y=\"28\" dy=\".35em\" font-size=\"21\" text-anchor=\"middle\" fill=\"var(--on-accent)\" font-family=\"var(--font-display)\">NU</text></svg>",
+      "css": ".ds-seal{display:block}"
+    },
+    {
+      "name": "Lotus Theme Toggle",
+      "kind": "custom",
+      "refersTo": "",
+      "description": "Round outlined button; the lotus opens by day and closes at night.",
+      "html": "<button class=\"ds-tg\" aria-label=\"Switch to night mode\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 48 32\" overflow=\"visible\"><path d=\"M24 29C12 30 4 25 2 17c7 0 16 4 22 12z\" fill=\"var(--gold-wash)\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linejoin=\"round\"/><path d=\"M24 29c12 1 20-4 22-12-7 0-16 4-22 12z\" fill=\"var(--gold-wash)\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linejoin=\"round\"/><path d=\"M24 4c5 7 6 16 0 24-6-8-5-17 0-24z\" fill=\"var(--gold)\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linejoin=\"round\"/></svg></button>",
+      "css": ".ds-tg{display:grid;place-items:center;background:none;border:1px solid var(--line);color:var(--gold-ink);border-radius:999px;width:2.5rem;height:2.5rem;cursor:pointer;transition:border-color .6s cubic-bezier(0.16, 1, 0.3, 1),background-color .6s cubic-bezier(0.16, 1, 0.3, 1)}.ds-tg:hover{border-color:var(--gold);background:var(--gold-wash)}.ds-tg:focus-visible{outline:2px solid var(--gold-ink);outline-offset:3px}"
+    },
+    {
+      "name": "Callout",
+      "kind": "card",
+      "refersTo": "callout",
+      "description": "Tinted note inside post prose; colour set by --c per kind.",
+      "html": "<div class=\"ds-callout\"><p class=\"ds-ct\">Tip</p><p>Keep the idempotency key with the request record.</p></div>",
+      "css": ".ds-callout{--c:var(--green);padding:.95rem 1.15rem;border:1px solid color-mix(in srgb,var(--c) 50%,var(--line));border-radius:8px;background:color-mix(in srgb,var(--c) 8%,transparent)}.ds-callout p{margin:0}.ds-ct{margin:0 0 .3rem!important;font-size:.74rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--c)}"
+    },
+    {
+      "name": "Code Block",
+      "kind": "custom",
+      "refersTo": "code-block",
+      "description": "Code wash block with language tag.",
+      "html": "<div class=\"ds-code\" data-lang=\"ts\"><pre><code>const key = crypto.randomUUID();</code></pre></div>",
+      "css": ".ds-code{position:relative}.ds-code::before{content:attr(data-lang);position:absolute;left:1.1rem;top:.5rem;font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}.ds-code pre{margin:0;padding:1.8rem 1.1rem 1rem;border-radius:8px;border:1px solid var(--line);background:var(--code-bg);font-family:var(--font-mono);font-size:.88rem;line-height:1.55;overflow-x:auto}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Bamboo Grove at Dawn",
+    "overview": "The site is a view into a grove: three depths of ink-wash bamboo, mist bands drifting between them, a low gold sun behind the stalks. Everything else is drawn in the same hand. Surfaces are mist-green washi with a faint fibre texture; text is bark-brown sumi; gold is light, never ink on light. The dark theme is the same grove before sunrise: forest-black ground, a pale gold moon, slow fireflies.\n\nIt is calm and sparse. There are no cards and no boxes: structure is carried by hairline rules warmed with gold, by the bamboo culm of the journey, and by whitespace (7rem between sections). Display type is a Japanese-inflected serif, body is a plain humanist sans, and every drawn mark passes through an ink-wash filter so edges feel brushed, not vector-clean. Reading pages (posts, resume) drop the scenery and keep only the palette, type and rules, on a 42-46rem column.\n\nReligious-adjacent motifs (lotus, ensō, bodhi leaf, mala) appear only as small authored marks: seals, dividers, the theme toggle, the footer strand, the contact pond. They are never wallpaper, and no figures or wheel-type symbols are used.",
+    "keyCharacteristics": [
+      "Mist-green washi ground with a multiply-blended fibre noise (opacity 0.22 light, 0.05 dark).",
+      "Gold for light, seals, rules and focus; a separate darker gold-ink for anything that must read as text on light.",
+      "Shippori Mincho 500 for names and headings, Lato 400/700 for everything else.",
+      "SVG ink filters on every drawn form; flat tonal depth, one shadow-free surface language.",
+      "Slow, damped, optional motion: nothing moves faster than 0.5s, the scene breathes over 15-120s."
+    ],
+    "rules": [
+      {
+        "name": "The Light-Not-Ink Rule",
+        "body": "Dawn gold is light. If gold must be read as text on a light ground, it is gold-ink (#7a5710). Decorative gold (rules, washes, the progress bar, seals) stays the brighter value.",
+        "section": "colors"
+      },
+      {
+        "name": "The Ground-Is-The-Mist Rule",
+        "body": "Mist bands, hero scrim and the hero bottom fade are all the page ground colour, so scenery always dissolves into the page and never ends in an edge.",
+        "section": "colors"
+      },
+      {
+        "name": "The One-Weight Display Rule",
+        "body": "Shippori Mincho is only ever 500; do not synthesise bold or italic.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat-As-Paper Rule",
+        "body": "Surfaces never cast shadows; separation comes from hairline rules, tone, or mist.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** use gold-ink (#7a5710) for any gold that must be read as text on the light ground.",
+      "**Do** run every new drawn form through an existing ink filter (`ink-rough-sm`, `ink-dry`, `ink-wash`) and draw it in palette colours via CSS variables so dark mode follows.",
+      "**Do** keep lotus, ensō, bodhi leaf and mala beads as seals, dividers, the toggle, list markers and the footer strand.",
+      "**Do** keep durations at or above 0.5s with the grove ease, and wrap any new motion in `prefers-reduced-motion: no-preference`.",
+      "**Do** separate with hairlines (1px, gold mixed 45-55% into Reed Line) and whitespace, not boxes."
+    ],
+    "donts": [
+      "**Don't** add cards, drop shadows or hard offset shadows; the system is flat.",
+      "**Don't** use gold (#bd9230) as body-size text on light.",
+      "**Don't** let the ground colour drift from the mist: scrims, bands and fades all use `--bg`.",
+      "**Don't** use religious figures, wheels or swastika-type symbols, or tile any motif as wallpaper.",
+      "**Don't** bold or italicise Shippori Mincho, or add a third typeface.",
+      "**Don't** add inline styles or third-party assets; CSP stays strict and fonts are self-hosted."
+    ]
+  }
+}

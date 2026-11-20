@@ -1,0 +1,11 @@
+---
+// A mala (prayer-bead) strand with a lotus tassel, hung across the foot of the page.
+const beads = Array.from({ length: 27 }, (_, i) => {
+  const t = i / 26;
+  return { x: 60 + t * 600, y: 8 + Math.sin(Math.PI * t) * 20 };
+});
+---
+<svg class="beads" viewBox="0 0 720 64" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false">
+  {beads.map((b, i) => <circle class={i === 13 ? 'bead bead-guru' : 'bead'} cx={b.x} cy={b.y} r={i === 13 ? 4.6 : 3} />)}
+  <use class="bead-lotus" href="#lotus" x="338" y="36" width="44" height="28" />
+</svg>
